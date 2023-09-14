@@ -156,9 +156,9 @@ public class RobotTestHardware {
      *
      * @param power driving power (-1.0 to 1.0)
      */
-    public void setArmPower(double power) {
+    /*public void setArmPower(double power) {
         armMotor.setPower(power);
-    }
+    }*/
 
     /**
      * Send the two hand-servos to opposing (mirrored) positions, based on the passed offset.
@@ -167,7 +167,7 @@ public class RobotTestHardware {
      */
     public void setHandPositions(double offset) {
         offset = Range.clip(offset, -0.5, 0.5);
-        leftHand.setPosition(MID_SERVO + offset);
-        rightHand.setPosition(MID_SERVO - offset);
+        /*leftHand.setPosition(MID_SERVO + offset);
+        rightHand.setPosition(MID_SERVO - offset);*/
     }
 }
