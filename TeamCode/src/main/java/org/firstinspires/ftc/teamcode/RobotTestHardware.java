@@ -59,10 +59,10 @@ public class RobotTestHardware {
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    private DcMotor leftMotorFront   = null;
-    private DcMotor rightMotorFront  = null;
-    private DcMotor leftMotorBack   = null;
-    private DcMotor rightMotorBack  = null;
+    public DcMotor leftMotorFront   = null;
+    public DcMotor rightMotorFront  = null;
+    public DcMotor leftMotorBack   = null;
+    public DcMotor rightMotorBack  = null;
    /* private DcMotor armMotor = null;
     private Servo   leftHand = null;
     private Servo   rightHand = null;
@@ -74,9 +74,9 @@ public class RobotTestHardware {
     public static final double ARM_DOWN_POWER  = -0.45 ;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
-    public RobotTestHardware(LinearOpMode opmode) {
+    /*public RobotTestHardware(LinearOpMode opmode) {
         myOpMode = opmode;
-    }
+    }*/
 
     /**
      * Initialize all the robot's hardware.
@@ -96,7 +96,7 @@ public class RobotTestHardware {
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         leftMotorFront.setDirection(DcMotor.Direction.REVERSE);
-        leftMotorBack.setDirection(DcMotor.Direction.FORWARD);
+        leftMotorBack.setDirection(DcMotor.Direction.REVERSE);
 
         // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
         // leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
