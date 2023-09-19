@@ -98,9 +98,11 @@ public class RobotTestHardware {
         leftMotorFront.setDirection(DcMotor.Direction.REVERSE);
         leftMotorBack.setDirection(DcMotor.Direction.REVERSE);
 
-        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-        // leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+       // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
+        leftMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotorBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
         /*leftHand = myOpMode.hardwareMap.get(Servo.class, "left_hand");
