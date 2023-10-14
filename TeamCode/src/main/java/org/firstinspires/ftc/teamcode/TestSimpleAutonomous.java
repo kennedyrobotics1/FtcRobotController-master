@@ -65,6 +65,11 @@ public class TestSimpleAutonomous extends LinearOpMode {
     private DcMotor motor3 = null;
     private ElapsedTime runtime = new ElapsedTime();
 
+    private int motor0Pos;
+    private int motor1Pos;
+    private int motor2Pos;
+    private int motor3Pos;
+
     public void smartSleep (double secondsToSleep){
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < secondsToSleep)) {
@@ -75,6 +80,7 @@ public class TestSimpleAutonomous extends LinearOpMode {
     //static final double     TURN_SPEED    = 0.5;
 
     @Override
+
     public void runOpMode() {
         // Initialize the drive system variables.
         motor0  = hardwareMap.get(DcMotor.class, "motor0");
@@ -89,6 +95,15 @@ public class TestSimpleAutonomous extends LinearOpMode {
         motor0.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.REVERSE);
 
+        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motor0Pos = 0;
+        motor1Pos = 0;
+        motor2Pos = 0;
+        motor3Pos = 0;
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
@@ -98,36 +113,29 @@ public class TestSimpleAutonomous extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        //Drive robot forward
-        motor0.setPower(1);
-        motor1.setPower(1);
-        motor2.setPower(1);
-        motor3.setPower(1);
-        smartSleep(1); // stay here in the code for 1 second
+        //drive forward
+        drive(1000, 1000, 1000, 1000, 0.25);
 
-        // Turn the robot left
-        robot.leftMotorFront.setPower(-.5);
-        robot.leftMotorBack.setPower(-.5);
-        robot.rightMotorFront.setPower(.5);
-        robot.rightMotorBack.setPower(.5);
-        smartSleep(1);
+    }
+    public void drive(int motor3Target, int motor2Target, int motor1Target, int motor0Target, double speed){
+        motor0Pos += motor0Target;
+        motor1Pos += motor1Target;
+        motor2Pos += motor2Target;
+        motor3Pos += motor3Target;
 
-        // Drive the robot forward
-        robot.leftMotorFront.setPower(1);
-        robot.leftMotorBack.setPower(1);
-        robot.rightMotorFront.setPower(1);
-        robot.rightMotorBack.setPower(1);
-        smartSleep(1);
+        motor0.setTargetPosition(motor0Pos);
+        motor1.setTargetPosition(motor1Pos);
+        motor2.setTargetPosition(motor2Pos);
+        motor3.setTargetPosition(motor3Pos);
 
-        // Park, stop the motors
-        robot.leftMotorFront.setPower(0);
-        robot.leftMotorBack.setPower(0);
-        robot.rightMotorFront.setPower(0);
-        robot.rightMotorBack.setPower(0);
-        smartSleep(1);
+        motor0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor3.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        telemetry.addData("Path", "Complete");
-        telemetry.update();
-        smartSleep(1);
+        motor0.setPower(speed);
+        motor1.setPower(speed);
+        motor2.setPower(speed);
+        motor3.setPower(speed);
     }
 }

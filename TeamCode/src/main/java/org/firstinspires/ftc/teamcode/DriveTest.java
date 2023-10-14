@@ -23,7 +23,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name= "DriveTest", group= "Linear OpMode")
 
-public class DrewTest extends LinearOpMode {
+public class DriveTest extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -64,11 +64,18 @@ public class DrewTest extends LinearOpMode {
             motor1Power = (y - x - r) / denominator;
             motor2Power = (y - x + r) / denominator;
             motor3Power = (y + x - r) / denominator;
-
-            motor0.setPower(motor0Power);
-            motor1.setPower(motor1Power);
-            motor2.setPower(motor2Power);
-            motor3.setPower(motor3Power);
+            //slow mode
+            if(gamepad1.left_bumper){
+                motor0.setPower(0.6 * motor0Power);
+                motor1.setPower(0.6 * motor1Power);
+                motor2.setPower(0.6 * motor2Power);
+                motor3.setPower(0.6 * motor3Power);
+            } else {
+                motor0.setPower(motor0Power);
+                motor1.setPower(motor1Power);
+                motor2.setPower(motor2Power);
+                motor3.setPower(motor3Power);
+            }
         }
 
     }
