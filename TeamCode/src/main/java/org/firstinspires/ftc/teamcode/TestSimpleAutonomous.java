@@ -54,16 +54,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Test: Simple Autonomous", group="Robot")
+@Autonomous(name="Test: Simple Autonomous", group="Linear OpMode")
 //@Disabled
 public class TestSimpleAutonomous extends LinearOpMode {
 
     /* Declare OpMode members. */
-    RobotTestHardware       robot   = new RobotTestHardware();
-    private DcMotor         leftDrive   = null;
-    private DcMotor         rightDrive  = null;
-
-    private ElapsedTime     runtime = new ElapsedTime();
+    private DcMotor motor0 = null;
+    private DcMotor motor1 = null;
+    private DcMotor motor2 = null;
+    private DcMotor motor3 = null;
+    private ElapsedTime runtime = new ElapsedTime();
 
     public void smartSleep (double secondsToSleep){
         runtime.reset();
@@ -76,16 +76,19 @@ public class TestSimpleAutonomous extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        robot.init();
         // Initialize the drive system variables.
-        //leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        //rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        motor0  = hardwareMap.get(DcMotor.class, "motor0");
+        motor1 = hardwareMap.get(DcMotor.class, "motor1");
+        motor2 = hardwareMap.get(DcMotor.class, "motor2");
+        motor3 = hardwareMap.get(DcMotor.class, "motor3");
+
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        //leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        //rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        motor0.setDirection(DcMotor.Direction.REVERSE);
+        motor2.setDirection(DcMotor.Direction.REVERSE);
+
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");    //
@@ -93,12 +96,13 @@ public class TestSimpleAutonomous extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+        runtime.reset();
 
         //Drive robot forward
-        robot.leftMotorFront.setPower(1);
-        robot.leftMotorBack.setPower(1);
-        robot.rightMotorFront.setPower(1);
-        robot.rightMotorBack.setPower(1);
+        motor0.setPower(1);
+        motor1.setPower(1);
+        motor2.setPower(1);
+        motor3.setPower(1);
         smartSleep(1); // stay here in the code for 1 second
 
         // Turn the robot left
