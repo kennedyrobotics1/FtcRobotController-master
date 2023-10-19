@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 /*
@@ -31,6 +34,7 @@ public class DriveTest extends LinearOpMode {
     private DcMotor motor1 = null;
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
+    private DistanceSensor sensorDistance;
 
     @Override
     public void runOpMode() {
@@ -38,6 +42,9 @@ public class DriveTest extends LinearOpMode {
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
+        sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_distance");
+
+        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorDistance;
 
         motor0.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.REVERSE);
@@ -59,11 +66,76 @@ public class DriveTest extends LinearOpMode {
             double y  =  -gamepad1.left_stick_y;
             double r = gamepad1.right_stick_x;
             double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(r), 1);
+            /*if(x <= 1 && x >= 0.9){
+                x = 1;
+                y = 0;
+            }
+            if(x > -0.8 && x <= -0.5 && y > 0.2 && y < 0.5){
+                x = -0.7;
+                y = 0.3;
+            }
+            if(x < 0.8 && x >= 0.5 && y < -0.2 && y > -0.5){
+                x = 0.7;
+                y = -0.3;
+            }
+            if(x > -0.8 && x <= -0.5 && y < -0.2 && y > -0.5){
+                x = -0.7;
+                y = -0.3;
+            }
+            if(x < 0.8 && x >= 0.5 && y > 0.2 && y < 0.5){
+                x = 0.7;
+                y = 0.3;
+            }
+            if(x <= 1 && x >= 0.9){
+                x = 1;
+                y = 0;
+            }
+            if(y > -0.8 && y <= -0.5 && x > 0.2 && x < 0.5){
+                y = -0.7;
+                x = 0.3;
+            }
+            if(y < 0.8 && y >= 0.5 && x < -0.2 && x > -0.5){
+                y = 0.7;
+                x = -0.3;
+            }
+            if(y > -0.8 && y <= -0.5 && x < -0.2 && x > -0.5){
+                y = -0.7;
+                x = -0.3;
+            }
+            if(y < 0.8 && y >= 0.5 && x > 0.2 && x < 0.5){
+                y = 0.7;
+                x = 0.3;
+            }
 
+            if(x >= -1 && x <= -0.8){
+                x = -1;
+                y = 0;
+            }
+            if(y <= 1 && y >= 0.8){
+                y = 1;
+                x = 0;
+            }
+            if(y >= -1 && y <= -0.9){
+                y = -1;
+                x = 0;
+            }*/
             motor0Power =  (y + x + r) / denominator;
             motor1Power = (y - x - r) / denominator;
             motor2Power = (y - x + r) / denominator;
             motor3Power = (y + x - r) / denominator;
+
+            if(sensorDistance.getDistance(DistanceUnit.INCH) <= 12){
+                motor0.setPower(0 * motor0Power);
+                motor1.setPower(0 * motor1Power);
+                motor2.setPower(0 * motor2Power);
+                motor3.setPower(0 * motor3Power);
+            }
+
+            telemetry.addData("Motor0 Power: " + motor0Power);
+            telemetry.addData("Motor1 Power: " + motor1Power);
+            telemetry.addData("Motor2 Power: " + motor2Power);
+            telemetry.addData("Motor3 Power: " + motor3Power);
+            telemetry.update();
             //slow mode
             if(gamepad1.left_bumper){
                 motor0.setPower(0.6 * motor0Power);

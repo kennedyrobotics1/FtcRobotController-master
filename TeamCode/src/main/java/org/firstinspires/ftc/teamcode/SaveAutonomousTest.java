@@ -29,15 +29,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /*
  * This OpMode illustrates the concept of driving a path based on encoder counts.
@@ -66,7 +61,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 
 @Autonomous(name="AutonomousTest", group="Robot")
-public class AutonomousTest extends LinearOpMode {
+public class SaveAutonomousTest extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor motor0 = null;
@@ -74,7 +69,6 @@ public class AutonomousTest extends LinearOpMode {
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
     private ElapsedTime runtime = new ElapsedTime();
-    private DistanceSensor sensorDistance;
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
     // Go to your motor vendor website to determine your motor's COUNTS_PER_MOTOR_REV
@@ -98,10 +92,7 @@ public class AutonomousTest extends LinearOpMode {
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2  = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
-        sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_distance");
 
-
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorDistance;
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
@@ -139,12 +130,6 @@ public class AutonomousTest extends LinearOpMode {
         encoderDrive(TURN_SPEED,   12, -12, 0.4);
         encoderDrive(DRIVE_SPEED, 24, 24, 0.225);
         //encoderDrive(DRIVE_SPEED,  48,  48, 0.75);
-
-        if(sensorDistance.getDistance(DistanceUnit.INCH) <= 12){
-            encoderDrive(DRIVE_SPEED,  0,  0, 0);
-        }
-
-
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(1000);  // pause to display final telemetry message.
