@@ -4,11 +4,14 @@ import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 
 /*
@@ -34,20 +37,35 @@ public class DriveTest extends LinearOpMode {
     private DcMotor motor1 = null;
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
+    private Servo arm0 = null;
     private DistanceSensor sensorDistance;
+    private ColorSensor colorSensor;
 
+    public final static double ARM_HOME = 0.0;
+    public final static double ARM_MIN_RANGE = 0.0;
+    public final static double ARM_MAX_RANGE = 1.0;
+    double armPosition = ARM_HOME;
+    double ARM_SPEED = 0.01;
     @Override
     public void runOpMode() {
         motor0  = hardwareMap.get(DcMotor.class, "motor0");
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
+
+        arm0 = hardwareMap.get(Servo.class, "arm0");
+
         sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_distance");
+        colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
 
         Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorDistance;
+        boolean bLedOn = true;
+        colorSensor.enableLed(bLedOn);
 
         motor0.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.REVERSE);
+
+        arm0.setPosition(ARM_HOME);
 
         waitForStart();
         runtime.reset();
@@ -119,22 +137,52 @@ public class DriveTest extends LinearOpMode {
                 y = -1;
                 x = 0;
             }*/
-            motor0Power =  (y + x + r) / denominator;
+            motor0Power = (y + x + r) / denominator;
             motor1Power = (y - x - r) / denominator;
             motor2Power = (y - x + r) / denominator;
             motor3Power = (y + x - r) / denominator;
 
-            if(sensorDistance.getDistance(DistanceUnit.INCH) <= 12){
-                motor0.setPower(0 * motor0Power);
-                motor1.setPower(0 * motor1Power);
-                motor2.setPower(0 * motor2Power);
-                motor3.setPower(0 * motor3Power);
+            if(gamepad1.a){
+                armPosition += ARM_SPEED;
+            } else if(gamepad1.y){
+                armPosition -= ARM_SPEED;
             }
 
-            telemetry.addData("Motor0 Power: " + motor0Power);
-            telemetry.addData("Motor1 Power: " + motor1Power);
-            telemetry.addData("Motor2 Power: " + motor2Power);
-            telemetry.addData("Motor3 Power: " + motor3Power);
+
+            armPosition = Range.clip(armPosition, ARM_MIN_RANGE, ARM_MAX_RANGE);
+            arm0.setPosition(armPosition);
+
+
+            while(sensorDistance.getDistance(DistanceUnit.INCH) <= 25){
+                motor0.setPower(-1);
+                motor1.setPower(-1);
+                motor2.setPower(-1);
+                motor3.setPower(-1);
+            }
+
+
+            int A = (65280 >> 24) & 0xff; // or color >>> 24
+            int R = (65280 >> 16) & 0xff;
+            int G = (65280 >>  8) & 0xff;
+            int B = (65280      ) & 0xff;
+
+
+
+
+            telemetry.addData("Arm Position: ", armPosition);
+            telemetry.addData("", colorSensor.argb());
+            telemetry.addData("Red: ", R);
+            telemetry.addData("Green: ", G);
+            telemetry.addData("Blue: ", B);
+            telemetry.addData("Alpha: ", A);
+            telemetry.addData("Distance: ", sensorDistance.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Red: ", colorSensor.red());
+            telemetry.addData("Green: ", colorSensor.green());3
+            telemetry.addData("Blue: ", colorSensor.blue());
+            telemetry.addData("Motor0 Power: ", motor0Power);
+            telemetry.addData("Motor1 Power: ", motor1Power);
+            telemetry.addData("Motor2 Power: ", motor2Power);
+            telemetry.addData("Motor3 Power: ", motor3Power);
             telemetry.update();
             //slow mode
             if(gamepad1.left_bumper){
