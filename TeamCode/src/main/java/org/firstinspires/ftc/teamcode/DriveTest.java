@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import static org.firstinspires.ftc.teamcode.pidController.PIDControl;
+
 
 
 /*
@@ -52,6 +54,9 @@ public class DriveTest extends LinearOpMode {
 
         arm0 = hardwareMap.get(DcMotor.class, "arm0");
         arm1 = hardwareMap.get(DcMotor.class, "arm1");
+
+        arm0.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_distance");
         colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
@@ -141,12 +146,17 @@ public class DriveTest extends LinearOpMode {
             motor3Power = (y + x - r) / denominator;
 
             if(gamepad1.a){
-                arm0.setPower(ARM_SPEED);
-                arm1.setPower(ARM_SPEED);
+                double arm0Power = pidController.PIDControl(100, arm0.getCurrentPosition());
+                double arm1Power = pidController.PIDControl(100, arm1.getCurrentPosition());
+                arm0.setPower(arm0Power);
+                arm1.setPower(arm1Power);
             } else if(gamepad1.y){
-                arm0.setPower(-0.02 * ARM_SPEED);
-                arm1.setPower(-0.02 * ARM_SPEED);
+                double arm0Power = pidController.PIDControl(-100, arm0.getCurrentPosition());
+                double arm1Power = pidController.PIDControl(-100, arm1.getCurrentPosition());
+                arm0.setPower(arm0Power);
+                arm1.setPower(arm1Power);
             }
+
 
 
 
