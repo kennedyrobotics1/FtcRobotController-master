@@ -37,15 +37,12 @@ public class DriveTest extends LinearOpMode {
     private DcMotor motor1 = null;
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
-    private Servo arm0 = null;
+    private DcMotor arm0 = null;
+    private DcMotor arm1 = null;
     private DistanceSensor sensorDistance;
     private ColorSensor colorSensor;
 
-    public final static double ARM_HOME = 0.0;
-    public final static double ARM_MIN_RANGE = 0.0;
-    public final static double ARM_MAX_RANGE = 1.0;
-    double armPosition = ARM_HOME;
-    double ARM_SPEED = 0.01;
+    double ARM_SPEED = 0.75;
     @Override
     public void runOpMode() {
         motor0  = hardwareMap.get(DcMotor.class, "motor0");
@@ -53,7 +50,8 @@ public class DriveTest extends LinearOpMode {
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
 
-        arm0 = hardwareMap.get(Servo.class, "arm0");
+        arm0 = hardwareMap.get(DcMotor.class, "arm0");
+        arm1 = hardwareMap.get(DcMotor.class, "arm1");
 
         sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_distance");
         colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
@@ -65,7 +63,7 @@ public class DriveTest extends LinearOpMode {
         motor0.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.REVERSE);
 
-        arm0.setPosition(ARM_HOME);
+        arm1.setDirection(DcMotor.Direction.REVERSE);
 
         waitForStart();
         runtime.reset();
@@ -143,14 +141,13 @@ public class DriveTest extends LinearOpMode {
             motor3Power = (y + x - r) / denominator;
 
             if(gamepad1.a){
-                armPosition += ARM_SPEED;
+                arm0.setPower(ARM_SPEED);
+                arm1.setPower(ARM_SPEED);
             } else if(gamepad1.y){
-                armPosition -= ARM_SPEED;
+                arm0.setPower(-0.02 * ARM_SPEED);
+                arm1.setPower(-0.02 * ARM_SPEED);
             }
 
-
-            armPosition = Range.clip(armPosition, ARM_MIN_RANGE, ARM_MAX_RANGE);
-            arm0.setPosition(armPosition);
 
 
             while(sensorDistance.getDistance(DistanceUnit.INCH) <= 25){
@@ -168,8 +165,6 @@ public class DriveTest extends LinearOpMode {
 
 
 
-
-            telemetry.addData("Arm Position: ", armPosition);
             telemetry.addData("", colorSensor.argb());
             telemetry.addData("Red: ", R);
             telemetry.addData("Green: ", G);
