@@ -55,8 +55,9 @@ public class DriveTest extends LinearOpMode {
         arm0 = hardwareMap.get(DcMotor.class, "arm0");
         arm1 = hardwareMap.get(DcMotor.class, "arm1");
 
-        arm0.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        /*arm0.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         arm1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        */
 
         sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_distance");
         colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
@@ -84,7 +85,7 @@ public class DriveTest extends LinearOpMode {
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
             double x = gamepad1.left_stick_x;
-            double y  =  -gamepad1.left_stick_y;
+            double y = -gamepad1.left_stick_y;
             double r = gamepad1.right_stick_x;
             double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(r), 1);
             /*if(x <= 1 && x >= 0.9){
@@ -145,7 +146,7 @@ public class DriveTest extends LinearOpMode {
             motor2Power = (y - x + r) / denominator;
             motor3Power = (y + x - r) / denominator;
 
-            if(gamepad1.a){
+            /*if(gamepad1.a){
                 double arm0Power = pidController.PIDControl(100, arm0.getCurrentPosition());
                 double arm1Power = pidController.PIDControl(100, arm1.getCurrentPosition());
                 arm0.setPower(arm0Power);
@@ -155,17 +156,20 @@ public class DriveTest extends LinearOpMode {
                 double arm1Power = pidController.PIDControl(-100, arm1.getCurrentPosition());
                 arm0.setPower(arm0Power);
                 arm1.setPower(arm1Power);
-            }
+            }*/
+
+            arm0.setPower(gamepad2.left_stick_y);
+            arm1.setPower(gamepad2.left_stick_y);
 
 
 
 
-            while(sensorDistance.getDistance(DistanceUnit.INCH) <= 25){
+            /*while(sensorDistance.getDistance(DistanceUnit.INCH) <= 25){
                 motor0.setPower(-1);
                 motor1.setPower(-1);
                 motor2.setPower(-1);
                 motor3.setPower(-1);
-            }
+            }*/
 
 
             int A = (65280 >> 24) & 0xff; // or color >>> 24
@@ -174,7 +178,7 @@ public class DriveTest extends LinearOpMode {
             int B = (65280      ) & 0xff;
 
 
-
+            telemetry.addData("Gamepad Y: ", gamepad2.left_stick_y);
             telemetry.addData("", colorSensor.argb());
             telemetry.addData("Red: ", R);
             telemetry.addData("Green: ", G);
