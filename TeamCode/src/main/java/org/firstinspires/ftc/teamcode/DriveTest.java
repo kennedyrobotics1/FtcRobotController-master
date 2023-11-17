@@ -53,6 +53,12 @@ public class DriveTest extends LinearOpMode {
         arm0 = hardwareMap.get(DcMotor.class, "arm0");
         arm1 = hardwareMap.get(DcMotor.class, "arm1");
 
+        arm0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        arm0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_distance");
         colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
 
@@ -64,6 +70,8 @@ public class DriveTest extends LinearOpMode {
         motor2.setDirection(DcMotor.Direction.REVERSE);
 
         arm1.setDirection(DcMotor.Direction.REVERSE);
+
+
 
         waitForStart();
         runtime.reset();
@@ -140,23 +148,29 @@ public class DriveTest extends LinearOpMode {
             motor2Power = (y - x + r) / denominator;
             motor3Power = (y + x - r) / denominator;
 
-            if(gamepad1.a){
-                arm0.setPower(ARM_SPEED);
-                arm1.setPower(ARM_SPEED);
-            } else if(gamepad1.y){
-                arm0.setPower(-0.02 * ARM_SPEED);
-                arm1.setPower(-0.02 * ARM_SPEED);
+            if(gamepad2.a){
+                double armPosition = pidController.PIDControl(1000, arm0.getCurrentPosition());
+                arm0.setTargetPosition((int) armPosition);
+                arm1.setTargetPosition((int) armPosition);
+            } else if(gamepad2.y){
+                double armPosition = pidController.PIDControl(-1000, arm0.getCurrentPosition());
+                arm0.setTargetPosition((int) armPosition);
+                arm1.setTargetPosition((int) armPosition);
             }
 
+            double k = -gamepad2.left_stick_y;
+            arm0.setPower(k);
+            arm1.setPower(k);
 
 
+            /*
             while(sensorDistance.getDistance(DistanceUnit.INCH) <= 25){
                 motor0.setPower(-1);
                 motor1.setPower(-1);
                 motor2.setPower(-1);
                 motor3.setPower(-1);
             }
-
+            */
 
             int A = (65280 >> 24) & 0xff; // or color >>> 24
             int R = (65280 >> 16) & 0xff;
@@ -165,19 +179,17 @@ public class DriveTest extends LinearOpMode {
 
 
 
-            telemetry.addData("", colorSensor.argb());
+            telemetry.addData("Arm0 current position:", arm0.getCurrentPosition());
+
+            telemetry.addData("Distance: ", sensorDistance.getDistance(DistanceUnit.INCH));
+            telemetry.addData("ARGB: ", colorSensor.argb());
             telemetry.addData("Red: ", R);
             telemetry.addData("Green: ", G);
             telemetry.addData("Blue: ", B);
             telemetry.addData("Alpha: ", A);
-            telemetry.addData("Distance: ", sensorDistance.getDistance(DistanceUnit.INCH));
             telemetry.addData("Red: ", colorSensor.red());
-            telemetry.addData("Green: ", colorSensor.green());3
+            telemetry.addData("Green: ", colorSensor.green());
             telemetry.addData("Blue: ", colorSensor.blue());
-            telemetry.addData("Motor0 Power: ", motor0Power);
-            telemetry.addData("Motor1 Power: ", motor1Power);
-            telemetry.addData("Motor2 Power: ", motor2Power);
-            telemetry.addData("Motor3 Power: ", motor3Power);
             telemetry.update();
             //slow mode
             if(gamepad1.left_bumper){
