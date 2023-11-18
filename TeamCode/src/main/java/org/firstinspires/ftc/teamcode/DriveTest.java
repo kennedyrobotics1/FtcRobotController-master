@@ -1,17 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 
 
 /*
@@ -42,7 +41,12 @@ public class DriveTest extends LinearOpMode {
     private DistanceSensor sensorDistance;
     private ColorSensor colorSensor;
 
+    public final static double ARM_HOME = 0.0;
     double ARM_SPEED = 0.75;
+
+    double armPosition = 0;
+
+
     @Override
     public void runOpMode() {
         motor0  = hardwareMap.get(DcMotor.class, "motor0");
@@ -56,22 +60,18 @@ public class DriveTest extends LinearOpMode {
         arm0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        arm0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        arm1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         sensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_distance");
         colorSensor = hardwareMap.get(ColorSensor.class, "sensor_color");
 
         Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorDistance;
-        boolean bLedOn = true;
-        colorSensor.enableLed(bLedOn);
+        /*boolean bLedOn = false;
+        colorSensor.enableLed(bLedOn);*/
 
         motor0.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.REVERSE);
 
         arm1.setDirection(DcMotor.Direction.REVERSE);
-
-
 
         waitForStart();
         runtime.reset();
@@ -80,105 +80,57 @@ public class DriveTest extends LinearOpMode {
 
             // Setup a variable for each drive wheel to save power level for telemetry
             double motor0Power, motor1Power, motor2Power, motor3Power;
-
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
             double x = gamepad1.left_stick_x;
-            double y  =  -gamepad1.left_stick_y;
+            double y =  -gamepad1.left_stick_y;
             double r = gamepad1.right_stick_x;
             double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(r), 1);
-            /*if(x <= 1 && x >= 0.9){
-                x = 1;
-                y = 0;
-            }
-            if(x > -0.8 && x <= -0.5 && y > 0.2 && y < 0.5){
-                x = -0.7;
-                y = 0.3;
-            }
-            if(x < 0.8 && x >= 0.5 && y < -0.2 && y > -0.5){
-                x = 0.7;
-                y = -0.3;
-            }
-            if(x > -0.8 && x <= -0.5 && y < -0.2 && y > -0.5){
-                x = -0.7;
-                y = -0.3;
-            }
-            if(x < 0.8 && x >= 0.5 && y > 0.2 && y < 0.5){
-                x = 0.7;
-                y = 0.3;
-            }
-            if(x <= 1 && x >= 0.9){
-                x = 1;
-                y = 0;
-            }
-            if(y > -0.8 && y <= -0.5 && x > 0.2 && x < 0.5){
-                y = -0.7;
-                x = 0.3;
-            }
-            if(y < 0.8 && y >= 0.5 && x < -0.2 && x > -0.5){
-                y = 0.7;
-                x = -0.3;
-            }
-            if(y > -0.8 && y <= -0.5 && x < -0.2 && x > -0.5){
-                y = -0.7;
-                x = -0.3;
-            }
-            if(y < 0.8 && y >= 0.5 && x > 0.2 && x < 0.5){
-                y = 0.7;
-                x = 0.3;
-            }
 
-            if(x >= -1 && x <= -0.8){
-                x = -1;
-                y = 0;
-            }
-            if(y <= 1 && y >= 0.8){
-                y = 1;
-                x = 0;
-            }
-            if(y >= -1 && y <= -0.9){
-                y = -1;
-                x = 0;
-            }*/
+
             motor0Power = (y + x + r) / denominator;
             motor1Power = (y - x - r) / denominator;
             motor2Power = (y - x + r) / denominator;
             motor3Power = (y + x - r) / denominator;
-
             if(gamepad2.a){
-                double armPosition = pidController.PIDControl(1000, arm0.getCurrentPosition());
-                arm0.setTargetPosition((int) armPosition);
-                arm1.setTargetPosition((int) armPosition);
+                armPosition = pidController.PIDControl(-50, arm0.getCurrentPosition());
+                arm0.setTargetPosition(arm0.getCurrentPosition() - 20);
+                arm1.setTargetPosition(arm0.getCurrentPosition() - 20);
+                arm0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                arm1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
             } else if(gamepad2.y){
-                double armPosition = pidController.PIDControl(-1000, arm0.getCurrentPosition());
-                arm0.setTargetPosition((int) armPosition);
-                arm1.setTargetPosition((int) armPosition);
+                armPosition = pidController.PIDControl(50, arm0.getCurrentPosition());
+                arm0.setTargetPosition(arm0.getCurrentPosition() + 20);
+                arm1.setTargetPosition(arm0.getCurrentPosition() + 20);
+                arm0.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                arm1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
             }
 
-            double k = -gamepad2.left_stick_y;
-            arm0.setPower(k);
-            arm1.setPower(k);
+            arm0.setPower(0.5);
+            arm1.setPower(0.5);
+
+            /*double k = -gamepad2.left_stick_y;
+            arm0.setPower(0.70 * k);
+            arm1.setPower(0.70 * k);*/
 
 
-            /*
-            while(sensorDistance.getDistance(DistanceUnit.INCH) <= 25){
-                motor0.setPower(-1);
-                motor1.setPower(-1);
-                motor2.setPower(-1);
-                motor3.setPower(-1);
-            }
-            */
 
+            /*while(sensorDistance.getDistance(DistanceUnit.INCH) <= 25){
+                motor0.setPower(-0.5);
+                motor1.setPower(-0.5);
+                motor2.setPower(-0.5);
+                motor3.setPower(-0.5);*/
             int A = (65280 >> 24) & 0xff; // or color >>> 24
             int R = (65280 >> 16) & 0xff;
             int G = (65280 >>  8) & 0xff;
             int B = (65280      ) & 0xff;
 
-
-
+            telemetry.addData("ArmPosition: ", (int) armPosition);
             telemetry.addData("Arm0 current position:", arm0.getCurrentPosition());
 
             telemetry.addData("Distance: ", sensorDistance.getDistance(DistanceUnit.INCH));
