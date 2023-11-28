@@ -7,13 +7,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Iterative;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 // todo: write your code here
-@TeleOp(name = "WDrive", group = "Iterative OpMode")
+@TeleOp(name = "DrivePID", group = "Iterative OpMode")
 
-public class WDrive extends BasicOpMode_Iterative {
+public class DrivePID extends BasicOpMode_Iterative {
     //variable declarations
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motor0 = null;
@@ -33,6 +32,26 @@ public class WDrive extends BasicOpMode_Iterative {
     double position;
     double start = 0;
     double error = setPoint - position;
+
+    double setPoint0 = 0;
+    double position0;
+    double start0 = 0;
+    double error0 = setPoint0 - position0;
+
+    double setPoint1 = 0;
+    double position1;
+    double start1 = 0;
+    double error1 = setPoint1 - position1;
+
+    double setPoint2 = 0;
+    double position2;
+    double start2 = 0;
+    double error2 = setPoint2 - position2;
+
+    double setPoint3 = 0;
+    double position3;
+    double start3 = 0;
+    double error3 = setPoint3 - position3;
 
     double startTime;
     double previousTime;
@@ -68,6 +87,18 @@ public class WDrive extends BasicOpMode_Iterative {
         start = arm0.getCurrentPosition();
         position = arm0.getCurrentPosition() - start;
 
+        start0 = motor0.getCurrentPosition();
+        position0 = motor0.getCurrentPosition() - start0;
+
+        start1 = motor1.getCurrentPosition();
+        position1 = motor1.getCurrentPosition() - start1;
+
+        start2 = motor2.getCurrentPosition();
+        position2 = motor2.getCurrentPosition() - start2;
+
+        start3 = motor3.getCurrentPosition();
+        position3 = motor3.getCurrentPosition() - start3;
+
         startTime = System.nanoTime();
         updateTime();
     }
@@ -78,8 +109,18 @@ public class WDrive extends BasicOpMode_Iterative {
         } else if (gamepad2.a){
             setPoint -= 100 * deltaTime;
         }
+
+        start0 = motor0.getCurrentPosition();
+        if(setPoint0 <= start0 + 50){
+            setPoint0 += gamepad1.left_stick_x;
+        }
+
         previousPosition = position;
         position = arm0.getCurrentPosition() - start;
+        position0 = motor0.getCurrentPosition() - start0;
+        position1 = motor1.getCurrentPosition() - start1;
+        position2 = motor2.getCurrentPosition() - start2;
+        position3 = motor3.getCurrentPosition() - start3;
         deltaPosition = position - previousPosition;
         error = setPoint - position;
         arm0.setPower(-(error * kp - (kd * velocity)));
