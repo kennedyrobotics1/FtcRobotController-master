@@ -22,7 +22,7 @@ public class Test extends BasicOpMode_Iterative {
     double kp = 3.0/120;
     double ki = 0;
     double kd = 0.01/120;
-    double setPoint = 120;
+    double setPoint = 0;
     double position;
     double start = 0;
     double error = setPoint - position;
