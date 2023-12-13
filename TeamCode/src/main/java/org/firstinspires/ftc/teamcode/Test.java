@@ -19,7 +19,7 @@ public class Test extends BasicOpMode_Iterative {
     //variable declarations
     private DcMotor arm0 = null;
     private DcMotor arm1 = null;
-    double kp = 3.0/120;
+    double kp = 1.0/50;
     double ki = 0;
     double kd = 0.01/120;
     double setPoint = 0;
@@ -52,17 +52,17 @@ public class Test extends BasicOpMode_Iterative {
     }
 
     public void loop(){
-        if(gamepad2.y){
-            setPoint += 100 * deltaTime;
-        } else if (gamepad2.a){
-            setPoint -= 100 * deltaTime;
+        if(gamepad1.y){
+            setPoint += 1500 * deltaTime;
+        } else if (gamepad1.a){
+            setPoint -= 1500 * deltaTime;
         }
         previousPosition = position;
         position = arm0.getCurrentPosition() - start;
         deltaPosition = position - previousPosition;
         error = setPoint - position;
-        arm0.setPower(-(error * kp - (kd * velocity)));
-        arm1.setPower(-(error * kp - (kd * velocity)));
+        arm0.setPower((error * kp - (kd * velocity)));
+        //arm1.setPower(-(error * kp - (kd * velocity)));
 
         updateTime();
 
@@ -72,8 +72,9 @@ public class Test extends BasicOpMode_Iterative {
 
         telemetry.addData("Delta Time: ", deltaTime);
         telemetry.addData("Time: ", time);
-
+        telemetry.addData("SetPoint ", setPoint);
         telemetry.addData("Current Error: ", error);
+        telemetry.addData("Position ", position);
         telemetry.addData("Current Position Arm0: ", arm0.getCurrentPosition());
         telemetry.addData("Current Position Arm1: ", arm1.getCurrentPosition());
         telemetry.addData("Current Power: ", error * kp);

@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Iterative;
 
-@Autonomous(name="AutonomousLinear", group="Linear OpMode")
-public class AutonomousLinear extends LinearOpMode {
+@Autonomous(name="RyanAutonomousLinear", group="Linear OpMode")
+public class RyanAutonomousLinear extends LinearOpMode {
     private DcMotor motor0 = null;
     private DcMotor motor1 = null;
     private DcMotor motor2 = null;
@@ -20,10 +20,10 @@ public class AutonomousLinear extends LinearOpMode {
     double setError1;
     double setError2;
     double setError3;
-    double kp0 = 1.0 / 1000;
-    double kp1 = 1.0 / 1000;
-    double kp2 = 1.0 / 1000;
-    double kp3 = 1.0 / 1000;
+    double kp0 = 1.0 / 1500;
+    double kp1 = 1.0 / 1500;
+    double kp2 = 1.0 / 1500;
+    double kp3 = 1.0 / 1500;
     double start0 = 0;
     double start1 = 0;
     double start2 = 0;
@@ -40,6 +40,11 @@ public class AutonomousLinear extends LinearOpMode {
     double error1;
     double error2;
     double error3;
+    double motorPower0;
+    double motorPower1;
+    double motorPower2;
+    double motorPower3;
+
     @Override
     public void runOpMode() {
         motor0 = hardwareMap.get(DcMotor.class, "motor0");
@@ -66,6 +71,8 @@ public class AutonomousLinear extends LinearOpMode {
         start1 = motor1.getCurrentPosition();
         start2 = motor2.getCurrentPosition();
         start3 = motor3.getCurrentPosition();
+        boolean move1 = true;
+        boolean move2 = false;
 
         position();
         telemetry.addData("opModeIsActice ", opModeIsActive());
@@ -76,65 +83,70 @@ public class AutonomousLinear extends LinearOpMode {
             telemetry.addData("setPoint0 ", setPoint0);
             telemetry.update();
 
-            setPoint0 = 1000;
-            setPoint1 = 1000;
-            setPoint2 = 1000;
-            setPoint3 = 1000;
-            boolean move1 = true;
-            while (move1) {
 
-                motor0.setPower(error0 * kp0);
-                motor1.setPower(error1 * kp1);
-                motor2.setPower(error2 * kp2);
-                motor3.setPower(error3 * kp3);
+
+            if (move1) {
+                setPoint0 = 2000;
+                setPoint1 = 2000;
+                setPoint2 = 2000;
+                setPoint3 = 2000;
+                if(position0 < error0){
+                    motorPower0 = position0 * kp0;
+                    motorPower1 = position1 * kp1;
+                    motorPower2 = position2 * kp2;
+                    motorPower3 = position3 * kp3;
+                } else {
+                    motorPower0 = error0 * kp0;
+                    motorPower1 = error1 * kp1;
+                    motorPower2 = error2 * kp2;
+                    motorPower3 = error3 * kp3;
+                }
+
+                motor0.setPower(motorPower0);
+                motor1.setPower(motorPower1);
+                motor2.setPower(motorPower2);
+                motor3.setPower(motorPower3);
                 position();
-                if ((error0 <= 6 || error0 >= -6) && (error1 <= 6 || error1 >= -6)) {
+                if ((error0 <= 100 && error0 >= -100) && (error1 <= 100 && error1 >= -100)) {
                     move1 = false;
+                    move2 = true;
                 }
                 telemetry.addData("kp0 ", kp0);
                 telemetry.addData("error0 ", error0);
+                telemetry.addData("error1 ", error1);
                 telemetry.update();
             }
 
 
-           /* setPoint0 = 250;
-            setPoint1 = 250;
-            setPoint2 = 250;
-            setPoint3 = 250;
-            position();
-            boolean move2 = true;
-            while (move2) {
+            else if (move2) {
+                setPoint0 = -100;
+                setPoint1 = 100;
+                setPoint2 = -100;
+                setPoint3 = 100;
+                /*if(position0 < error0){
+                    motorPower0 = position0 * kp0;
+                    motorPower1 = position1 * kp1;
+                    motorPower2 = position2 * kp2;
+                    motorPower3 = position3 * kp3;
+                } else {
+                    motorPower0 = error0 * kp0;
+                    motorPower1 = error1 * kp1;
+                    motorPower2 = error2 * kp2;
+                    motorPower3 = error3 * kp3;
+                }*/
+
                 motor0.setPower(error0 * kp0);
                 motor1.setPower(error1 * kp1);
                 motor2.setPower(error2 * kp2);
                 motor3.setPower(error3 * kp3);
                 position();
-                if (error0 == 0 && error1 == 0) {
+                if ((error0 <= 10 && error0 >= -10) && (error1 <= 10 && error1 >= -10)) {
                     move2 = false;
                 }
-            }*/
-
-
-            /*position();
-            setPoint0 = -250;
-            setPoint1 = 250;
-            setPoint2 = -250;
-            setPoint3 = 250;
-            boolean move3 = true;
-            while (move3) {
-
-                motor0.setPower(error0 * kp0);
-                motor1.setPower(error1 * kp1);
-                motor2.setPower(error2 * kp2);
-                motor3.setPower(error3 * kp3);
-                position();
-                if ((error0 <= 6 || error0 >= -6) && (error1 <= 6 || error1 >= -6)) {
-                    move3 = false;
-                }
-            }*/
+            }
         }
     }
-    public void position(){
+    public void position() {
         boolean first = true;
         position0 = motor0.getCurrentPosition() - start0;
         position1 = motor1.getCurrentPosition() - start1;
@@ -144,7 +156,8 @@ public class AutonomousLinear extends LinearOpMode {
         error1 = setPoint1 - position1;
         error2 = setPoint2 - position2;
         error3 = setPoint3 - position3;
-        if(first){
+
+        if (first) {
             setError0 = error0;
             setError1 = error1;
             setError2 = error2;
@@ -154,3 +167,5 @@ public class AutonomousLinear extends LinearOpMode {
 
     }
 }
+
+
