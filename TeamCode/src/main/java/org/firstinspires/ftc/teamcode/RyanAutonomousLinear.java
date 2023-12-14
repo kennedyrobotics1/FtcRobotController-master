@@ -72,6 +72,7 @@ public class RyanAutonomousLinear extends LinearOpMode {
         start2 = motor2.getCurrentPosition();
         start3 = motor3.getCurrentPosition();
         boolean move1 = true;
+        boolean move1First = true;
         boolean move2 = false;
         boolean move2First = true;
 
@@ -85,11 +86,9 @@ public class RyanAutonomousLinear extends LinearOpMode {
 
 
             if (move1) {
-                while(motor0.getCurrentPosition() <= start0 + 50){
-                    motor0.setPower(0.2);
-                    motor1.setPower(0.2);
-                    motor2.setPower(0.2);
-                    motor3.setPower(0.2);
+                if(move1First){
+                    start0 -= 200;
+                    move1First = false;
                 }
                 setPoint0 = 2000;
                 setPoint1 = 2000;
@@ -112,7 +111,7 @@ public class RyanAutonomousLinear extends LinearOpMode {
                 motor2.setPower(motorPower0);
                 motor3.setPower(motorPower0);
                 position();
-                if ((error0 <= 100 && error0 >= -100) && (error1 <= 100 && error1 >= -100)) {
+                if ((error0 <= 100 && error0 >= -100)) {
                     move1 = false;
                     move2 = true;
 
@@ -121,7 +120,7 @@ public class RyanAutonomousLinear extends LinearOpMode {
             }
 
 
-            /*else if (move2) {
+            else if (move2) {
                 if(move2First){
                     start0 = motor0.getCurrentPosition();
                     start1 = motor1.getCurrentPosition();
@@ -133,7 +132,7 @@ public class RyanAutonomousLinear extends LinearOpMode {
                 setPoint1 = 900;
                 setPoint2 = -900;
                 setPoint3 = 900;
-                /*if(position0 < error0){
+                if(position0 < error0){
                     motorPower0 = position0 * kp0;
                     motorPower1 = position1 * kp1;
                     motorPower2 = position2 * kp2;
@@ -143,9 +142,9 @@ public class RyanAutonomousLinear extends LinearOpMode {
                     motorPower1 = error1 * kp1;
                     motorPower2 = error2 * kp2;
                     motorPower3 = error3 * kp3;
-                }*/
+                }
 
-                /*motor0.setPower(error0 * kp0);
+                motor0.setPower(error0 * kp0);
                 motor1.setPower(error1 * kp1);
                 motor2.setPower(error2 * kp2);
                 motor3.setPower(error3 * kp3);
@@ -153,7 +152,7 @@ public class RyanAutonomousLinear extends LinearOpMode {
                 if ((error0 <= 10 && error0 >= -10) && (error1 <= 10 && error1 >= -10)) {
                     move2 = false;
                 }
-            }*/
+            }
             telemetry.addData("error0 ", error0);
             telemetry.addData("error1 ", error1);
             telemetry.addData("position0 ", position0);
