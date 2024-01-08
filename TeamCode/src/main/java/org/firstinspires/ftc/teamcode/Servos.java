@@ -21,41 +21,46 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Servos extends BasicOpMode_Iterative {
     //variable declarations
     private Servo servo0 = null;
-    private Servo servo1 = null;
-    private Servo servo2 = null;
+    private CRServo servo1 = null;
+    private CRServo servo2 = null;
     double targetPosition0 = 0;
     double targetPosition1 = 0;
     public void init() {
         servo0 = hardwareMap.get(Servo.class, "servo0");
         servo0.setDirection(Servo.Direction.FORWARD);
-        servo1 = hardwareMap.get(Servo.class, "servo1");
-        servo1.setDirection(Servo.Direction.REVERSE);
-        servo2 = hardwareMap.get(Servo.class, "servo2");
-        servo2.setDirection(Servo.Direction.FORWARD);
+        servo1 = hardwareMap.get(CRServo.class, "servo1");
+        //servo1.setDirection(Servo.Direction.REVERSE);
+        servo2 = hardwareMap.get(CRServo.class, "servo2");
+        //servo2.setDirection(Servo.Direction.FORWARD);
 
     }
 
     public void start(){
         targetPosition0 = 0.46;
         servo0.setPosition(servo0.getPosition());
-        targetPosition1 = 0.15;
-        servo1.setPosition(targetPosition1);
-        servo2.setPosition(targetPosition1);
+        targetPosition1 = 0;
+        servo1.setPower(0.1);
+        servo2.setPower(0.1);
     }
 
     public void loop(){
         servo0.setPosition(targetPosition0);
-        servo1.setPosition(targetPosition1);
-        servo2.setPosition(targetPosition1);
+        //servo1.setPosition(targetPosition1);
+        //servo2.setPosition(targetPosition1);
+        servo1.setPower(-targetPosition1);
+        servo2.setPower(targetPosition1);
+
         if(gamepad1.y){
             targetPosition0 += 0.0003;
         } else if (gamepad1.a){
             targetPosition0 -= 0.0003;
         }
-        if(gamepad1.x && targetPosition1 < 1.0){
-            targetPosition1 += 0.003;
-        } else if (gamepad1.b && targetPosition1 > 0){
-            targetPosition1 -= 0.003;
+        if(gamepad1.x){
+           // targetPosition1 += 0.003;
+            targetPosition1 = 0.1;
+        } else if (gamepad1.b){
+           // targetPosition1 -= 0.003;
+            targetPosition1 = -0.1;
         }
 
 
