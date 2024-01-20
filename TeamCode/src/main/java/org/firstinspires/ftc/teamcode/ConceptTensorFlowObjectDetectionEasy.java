@@ -101,7 +101,7 @@ public class ConceptTensorFlowObjectDetectionEasy extends LinearOpMode {
     /**
      * Initialize the TensorFlow Object Detection processor.
      */
-    private void initTfod() {
+    public void initTfod() {
 
         // Create the TensorFlow processor the easy way.
         tfod = TfodProcessor.easyCreateWithDefaults();
@@ -120,7 +120,7 @@ public class ConceptTensorFlowObjectDetectionEasy extends LinearOpMode {
     /**
      * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
      */
-    private void telemetryTfod() {
+    public void telemetryTfod() {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
