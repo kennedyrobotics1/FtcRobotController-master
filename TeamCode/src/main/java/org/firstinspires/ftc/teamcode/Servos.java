@@ -41,6 +41,9 @@ public class Servos extends BasicOpMode_Iterative {
     double deltaPositionClaw;
     double velocityClaw;
 
+    boolean forward = true;
+    boolean back = true;
+    double counter = 0;
     double servoPosition;
     public void init() {
         servo0 = hardwareMap.get(CRServo.class, "servo0");
@@ -56,12 +59,13 @@ public class Servos extends BasicOpMode_Iterative {
 
     public void start(){
         previousPositionClaw = servoPosition;
-        servoPosition = analogInput.getVoltage() / 3.3 * 360;
+        servoPosition = analogInput.getVoltage() / 3.3 * 360 + counter * 360;
         targetPosition1 = 0;
         startClaw = servoPosition;
+        deltaPositionClaw = positionClaw - previousPositionClaw;
 
         positionClaw = servoPosition - startClaw;
-        setPointClaw = 180;
+        setPointClaw = servoPosition;
         errorClaw = setPointClaw - servoPosition;
         /*if(servoPosition >= 357.5 && setPointClaw > 200){
             setPointClaw -= 350;
@@ -69,6 +73,8 @@ public class Servos extends BasicOpMode_Iterative {
         if(servoPosition <= 2.5 && setPointClaw < 150){
             setPointClaw += 350;
         }*/
+
+        counter = 0;
         servo0.setPower(-(errorClaw * kp));
         //servo1.setPower(0);
         //servo2.setPower(0);
@@ -77,20 +83,37 @@ public class Servos extends BasicOpMode_Iterative {
     }
 
     public void loop(){
-        servoPosition = analogInput.getVoltage() / 3.3 * 360;
 
         updateTime();
-
+        servoPosition = analogInput.getVoltage() / 3.3 * 360 + counter * 360;
 
         //positionClaw = servoPosition - startClaw;
-        if(errorClaw >= 200){
+        /*if(errorClaw >= 200){
             setPointClaw = servoPosition;
             errorClaw = 0;
         }
         if(errorClaw <= -200){
             setPointClaw = servoPosition;
             errorClaw = 0;
+        }*/
+
+        if(errorClaw >= 200 && forward){
+            counter += 1;
+            forward = false;
+            back = true;
         }
+        if(errorClaw <= -200 && back){
+            counter -= 1;
+            back = false;
+            forward = true;
+        }
+        /*if(servoPosition == 5 && velocityClaw < 0){
+            counter -= 1;
+        }*/
+
+        previousPositionClaw = servoPosition;
+//        servoPosition = analogInput.getVoltage() / 3.3 * 360 + counter * 360;
+        deltaPositionClaw = servoPosition - previousPositionClaw;
 
         errorClaw = setPointClaw - servoPosition;
         velocityClaw = deltaPositionClaw / deltaTime;
@@ -111,8 +134,6 @@ public class Servos extends BasicOpMode_Iterative {
         //servo2.setPosition(targetPosition1);
         //servo1.setPower(-targetPosition1);
         //servo2.setPower(targetPosition1);
-        servoPosition = analogInput.getVoltage() / 3.3 * 360;
-
         if(gamepad1.y){
             targetPosition0 += 0.0004;
         } else if (gamepad1.a){
@@ -129,8 +150,10 @@ public class Servos extends BasicOpMode_Iterative {
             targetPosition1 = 0;
         }
 
-
-
+        telemetry.addData("deltaPos ", deltaPositionClaw);
+        telemetry.addData("deltaTime ", deltaTime);
+        telemetry.addData("Counter ", counter);
+        telemetry.addData("Velocity ", velocityClaw);
         telemetry.addData("Current servoPosition: ", servoPosition);
         telemetry.addData("target ", setPointClaw);
         telemetry.addData("Power ", (errorClaw * kp));
