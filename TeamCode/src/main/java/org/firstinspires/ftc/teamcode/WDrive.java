@@ -7,10 +7,13 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.ServoImpl;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Iterative;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -21,6 +24,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class WDrive extends BasicOpMode_Iterative {
     //variable declarations
     private ElapsedTime runtime = new ElapsedTime();
+
+    IMU imu;
+    int logoFacingDirectionPosition;
+    int usbFacingDirectionPosition;
     private DcMotor motor0 = null;
     private DcMotor motor1 = null;
     private DcMotor motor2 = null;
@@ -60,7 +67,6 @@ public class WDrive extends BasicOpMode_Iterative {
 
     double setPointClaw;
     double positionClaw;
-    double startClaw;
     double errorClaw = setPointClaw - positionClaw;
 
     double startTime;
@@ -103,6 +109,10 @@ public class WDrive extends BasicOpMode_Iterative {
 
     double realArmPower = 0;
 
+    boolean first = true;
+
+    double startClaw;
+
     public void init() {
         motor0  = hardwareMap.get(DcMotor.class, "motor0");
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
@@ -124,6 +134,13 @@ public class WDrive extends BasicOpMode_Iterative {
         servo2 = hardwareMap.get(CRServo.class, "servo2");
 
         analogInput = hardwareMap.get(AnalogInput.class, "servoEncoder");
+        imu = hardwareMap.get(IMU.class, "imu");
+        logoFacingDirectionPosition = 0; // Up
+        usbFacingDirectionPosition = 2; // Forward
+
+
+
+
 
 
         //arm0.setDirection(DcMotor.Direction.REVERSE);
@@ -136,6 +153,8 @@ public class WDrive extends BasicOpMode_Iterative {
 
         start1 = climb0.getCurrentPosition();
         position1 = climb0.getCurrentPosition() - start1;
+
+        imu.resetYaw();
 
 
 
@@ -178,6 +197,11 @@ public class WDrive extends BasicOpMode_Iterative {
 
     public void loop(){
         servoPosition = analogInput.getVoltage() / 3.3 * 360 + counter * 360;
+
+        if(first){
+            startClaw = servoPosition;
+            first = false;
+        }
         if(errorClaw >= 200 && forward){
             counter += 1;
             forward = false;
@@ -211,7 +235,7 @@ public class WDrive extends BasicOpMode_Iterative {
         error = setPoint - position;
 
         armPower = (error * kp - (kd * velocity));
-        realArmPower = Math.max(armPower, -0.7);
+        realArmPower = Math.max(armPower, -0.35);
 
         arm0.setPower(realArmPower);
         arm1.setPower(-realArmPower);
@@ -245,7 +269,7 @@ public class WDrive extends BasicOpMode_Iterative {
         motor2Power = (y - x + r) / denominator;
         motor3Power = (y + x - r) / denominator;
 
-        if(gamepad1.x){
+        if(gamepad1.a || gamepad1.dpad_down){
             motor0.setPower(0.2 * motor0Power);
             motor1.setPower(0.2 * motor1Power);
             motor2.setPower(0.2 * motor2Power);
@@ -302,7 +326,7 @@ public class WDrive extends BasicOpMode_Iterative {
         newTime = runtime.seconds();
 
         if(newTime - oldTime >= 0.5 && slow){
-            targetPosition2 = 0.1;
+            targetPosition2 = 0.2;
         }
 
         if (gamepad2.dpad_left){
@@ -320,10 +344,12 @@ public class WDrive extends BasicOpMode_Iterative {
         newTime1 = runtime.seconds();
 
         if(newTime1 - oldTime1 >= 0.5 && slow1){
-            targetPosition1 = 0.1;
+            targetPosition1 = 0.2;
         }
 
-
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        telemetry.addData("Yaw: ", orientation.getYaw(AngleUnit.DEGREES));
+        telemetry.addData("ServoStart ", startClaw);
         telemetry.addData("Current Position Arm0: ", arm0.getCurrentPosition());
         telemetry.addData("Current Position Climb0: ", climb0.getCurrentPosition());
         telemetry.addData("Current servoPosition: ", servoPosition);
