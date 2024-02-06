@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -56,10 +57,10 @@ public class RedFar extends LinearOpMode {
     double kpA = 1.0/100;
 
     private CRServo servo0 = null;
-    private CRServo servo1 = null;
-    private CRServo servo2 = null;
-    double targetPosition0 = 0;
-    double targetPosition1 = 0;
+    private ServoImplEx servo1 = null;
+    private ServoImplEx servo2 = null;
+    double targetPosition0;
+    double targetPosition1;
 
     private DcMotor arm0 = null;
     private DcMotor arm1 = null;
@@ -105,10 +106,10 @@ public class RedFar extends LinearOpMode {
     private TfodProcessor tfod;
 
     private VisionPortal visionPortal;
-    private static final String TFOD_MODEL_ASSET = "BlueBox.tflite";
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/BlueBox.tflite";
+    private static final String TFOD_MODEL_ASSET = "RedBox.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/RedBox.tflite";
     private static final String[] LABELS = {
-            "BB",
+            "RB",
     };
 
     double getPreviousPositionClimb;
@@ -118,6 +119,10 @@ public class RedFar extends LinearOpMode {
     double previousPositionClaw;
     double deltaPositionClaw;
     double velocityClaw;
+
+    double previousPosition0;
+    double deltaPosition0;
+    double velocity0;
 
     double servoPosition;
 
@@ -147,8 +152,8 @@ public class RedFar extends LinearOpMode {
         position3 = motor3.getCurrentPosition() - start3;
 
         servo0 = hardwareMap.get(CRServo.class, "servo0");
-        servo1 = hardwareMap.get(CRServo.class, "servo1");
-        servo2 = hardwareMap.get(CRServo.class, "servo2");
+        servo1 = hardwareMap.get(ServoImplEx.class, "servo1");
+        servo2 = hardwareMap.get(ServoImplEx.class, "servo2");
 
         arm0  = hardwareMap.get(DcMotor.class, "arm0");
         arm1  = hardwareMap.get(DcMotor.class, "arm1");
@@ -184,10 +189,10 @@ public class RedFar extends LinearOpMode {
         setPointClaw = servoPosition;
         errorClaw = setPointClaw - servoPosition;
 
-        targetPosition0 = 0;
-        targetPosition1 = 0.1;
-        servo1.setPower(-targetPosition1);
-        servo2.setPower(targetPosition1);
+        targetPosition0 = 0.08;
+        targetPosition1 = 0.92;
+        servo1.setPosition(targetPosition0);
+        servo2.setPosition(targetPosition1);
 
         start0 = motor0.getCurrentPosition();
         start1 = motor1.getCurrentPosition();
@@ -196,6 +201,11 @@ public class RedFar extends LinearOpMode {
 
         counter = 0;
 
+
+        boolean moveTurn = false;
+        boolean moveTurnFirst = true;
+        boolean moveForward = false;
+        boolean moveForwardFirst = true;
         boolean push = false;
         boolean pushFirst = true;
         boolean armDown = false;
@@ -233,6 +243,13 @@ public class RedFar extends LinearOpMode {
         boolean move13First = true;
         boolean move14 = false;
         boolean move14First = true;
+        boolean move15 = false;
+        boolean move15First = true;
+        boolean move16 = false;
+        boolean move16First = true;
+
+        boolean turnCenter = false;
+        boolean turnCenterFirst = true;
 
 
 
@@ -252,10 +269,10 @@ public class RedFar extends LinearOpMode {
                     move1First = false;
 
                 }
-                setPoint0 = 600;
-                setPoint1 = 600;
-                setPoint2 = 600;
-                setPoint3 = 600;
+                setPoint0 = 550;
+                setPoint1 = 550;
+                setPoint2 = 550;
+                setPoint3 = 550;
                 if(position0 < error0){
                     motorPower0 = position0 * kp;
                     motorPower1 = position1 * kp;
@@ -288,114 +305,46 @@ public class RedFar extends LinearOpMode {
 
                 setPointClaw = startClaw;
 
+
                 servo0.setPower(-(errorClaw *  kpClaw));
                 if ((error0 <= 20 && error0 >= -20)) {
                     motor0.setPower(0);
                     motor1.setPower(0);
                     motor2.setPower(0);
                     motor3.setPower(0);
+                    servo0.setPower(0);
                     move1 = false;
-                    strafe1 = true;
-
-                }
-
-            }
-
-            else if (strafe1) {
-                if(strafe1First){
-                    start0 = motor0.getCurrentPosition();
-                    start1 = motor1.getCurrentPosition();
-                    start2 = motor2.getCurrentPosition();
-                    start3 = motor3.getCurrentPosition();
-                    strafe1First = false;
-                }
-                setPoint0 = 500;
-                setPoint1 = -500;
-                setPoint2 = -500;
-                setPoint3 = 500;
-                if(position0 < error0){
-                    motorPower0 = position0 * kp;
-                    motorPower1 = position1 * kp;
-                    motorPower2 = position2 * kp;
-                    motorPower3 = position3 * kp;
-                } else {
-                    motorPower0 = error0 * kp;
-                    motorPower1 = error1 * kp;
-                    motorPower2 = error2 * kp;
-                    motorPower3 = error3 * kp;
-                }
-
-                if((motorPower0 < 0.25 && motorPower0 > 0)){
-                    motorPower0 = 0.25;
-                }
-                if((motorPower0 > -0.25 && motorPower0 < 0)){
-                    motorPower0 = -0.25;
-                }
-                if((motorPower1 < 0.25 && motorPower1 > 0)){
-                    motorPower1 = 0.25;
-                }
-                if((motorPower1 > -0.25 && motorPower1 < 0)){
-                    motorPower1 = -0.25;
-                }
-
-                motor0.setPower(motorPower0);
-                motor1.setPower(motorPower1);
-                motor2.setPower(motorPower1);
-                motor3.setPower(motorPower0);
-                position();
-                if ((error0 <= 20 && error0 >= -20) || (error1 <= 20 && error1 >= -20)) {
-                    motor0.setPower(0);
-                    motor1.setPower(0);
-                    motor2.setPower(0);
-                    motor3.setPower(0);
-                    strafe1 = false;
-                    move2 = true;
-                }
-
-            }
-            else if(move2){
-                if(move2First){
-                    oldTime = runtime.seconds();
-
-                    move2First = false;
-                }
-                newTime = runtime.seconds();
-                setPointClaw = startClaw;
-                if(recognitions >= 1){
-                    middle = true;
-                    move2 = false;
-                    armDown = true;
-                }
-                if(newTime - oldTime >= 1.5){
-                    move2 = false;
                     move3 = true;
+
                 }
+
             }
 
-            //turn left
             else if (move3) {
                 if(move3First){
+                    oldTime = runtime.seconds();
                     start0 = motor0.getCurrentPosition();
                     start1 = motor1.getCurrentPosition();
                     start2 = motor2.getCurrentPosition();
                     start3 = motor3.getCurrentPosition();
                     move3First = false;
                 }
+                newTime = runtime.seconds();
                 double motorPower0 = -(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.225 && motorPower0 > 0)){
-                    motorPower0 = 0.225;
+                if((motorPower0 < 0.2 && motorPower0 > 0)){
+                    motorPower0 = 0.2;
                 }
-                if((motorPower0 > -0.225 && motorPower0 < 0)){
-                    motorPower0 = -0.225;
+                if((motorPower0 > -0.2 && motorPower0 < 0)){
+                    motorPower0 = -0.2;
                 }
-                if((motorPower1 < 0.225 && motorPower1 > 0)){
-                    motorPower1 = 0.225;
+                if((motorPower1 < 0.2 && motorPower1 > 0)){
+                    motorPower1 = 0.2;
                 }
-                if((motorPower1 > -0.225 && motorPower1 < 0)){
-                    motorPower1 = -0.225;
+                if((motorPower1 > -0.2 && motorPower1 < 0)){
+                    motorPower1 = -0.2;
                 }
-                setYaw = 45;
+                setYaw = 28;
 
                 motor0.setPower(motorPower0);
                 motor1.setPower(motorPower1);
@@ -405,9 +354,84 @@ public class RedFar extends LinearOpMode {
 
                 setPointClaw = startClaw;
 
-                servo0.setPower(-(errorClaw *  kpClaw));
-                if (headingError <= 0.3 && headingError >= -0.3){
+
+                servo0.setPower(0);
+                if ((headingError <= 0.3 && headingError >= -0.3) || newTime - oldTime >= 1.25){
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
                     move3 = false;
+                    move2 = true;
+
+                }
+            }
+            else if(move2){
+                if(move2First){
+                    oldTime = runtime.seconds();
+                    move2First = false;
+                }
+                newTime = runtime.seconds();
+                telemetryTfod();
+                if(recognitions >= 1 || left){
+                    left = true;
+                    move2 = false;
+                    armDown = true;
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                }
+                if(newTime - oldTime >= 2.75){
+                    move2 = false;
+                    move5 = true;
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                }
+            }
+
+            else if(move5 && !left){
+                if(move5First){
+                    oldTime = runtime.seconds();
+                    start0 = motor0.getCurrentPosition();
+                    start1 = motor1.getCurrentPosition();
+                    start2 = motor2.getCurrentPosition();
+                    start3 = motor3.getCurrentPosition();
+                    move5First = false;
+                }
+                newTime = runtime.seconds();
+                double motorPower0 = -(headingError * kpA);
+                double motorPower1 = (headingError * kpA);
+                if((motorPower0 < 0.15 && motorPower0 > 0)){
+                    motorPower0 = 0.15;
+                }
+                if((motorPower0 > -0.15 && motorPower0 < 0)){
+                    motorPower0 = -0.15;
+                }
+                if((motorPower1 < 0.15 && motorPower1 > 0)){
+                    motorPower1 = 0.15;
+                }
+                if((motorPower1 > -0.15 && motorPower1 < 0)){
+                    motorPower1 = -0.15;
+                }
+                setYaw = -40;
+
+                motor0.setPower(motorPower0);
+                motor1.setPower(motorPower1);
+                motor2.setPower(motorPower0);
+                motor3.setPower(motorPower1);
+
+                position();
+
+                setPointClaw = startClaw;
+
+                servo0.setPower(-(errorClaw *  kpClaw));
+
+
+                if ((headingError <= 0.3 && headingError >= -0.3) || newTime - oldTime >= 1.4){
+                    move5 = false;
                     move4 = true;
                     motor0.setPower(0);
                     motor1.setPower(0);
@@ -425,129 +449,64 @@ public class RedFar extends LinearOpMode {
                 }
                 newTime = runtime.seconds();
                 setPointClaw = startClaw;
-
+                telemetryTfod();
                 if(recognitions >= 1){
-                    left = true;
+                    right = true;
                     move4 = false;
                     armDown = true;
                 }
-                if(newTime - oldTime >= 1.0){
+                if(newTime - oldTime >= 1.9){
                     move4 = false;
-                    move5 = true;
+                    move6 = true;
                 }
             }
-            //turn right
-            else if(move5 && !left){
-                if(move5First){
+
+            else if(move6){
+                if(move6First){
+                    oldTime = runtime.seconds();
                     start0 = motor0.getCurrentPosition();
                     start1 = motor1.getCurrentPosition();
                     start2 = motor2.getCurrentPosition();
                     start3 = motor3.getCurrentPosition();
-                    move5First = false;
+                    move6First = false;
                 }
-
+                newTime = runtime.seconds();
                 double motorPower0 = -(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.225 && motorPower0 > 0)){
-                    motorPower0 = 0.225;
+                if((motorPower0 < 0.17 && motorPower0 > 0)){
+                    motorPower0 = 0.17;
                 }
-                if((motorPower0 > -0.225 && motorPower0 < 0)){
-                    motorPower0 = -0.225;
+                if((motorPower0 > -0.17 && motorPower0 < 0)){
+                    motorPower0 = -0.17;
                 }
-                if((motorPower1 < 0.225 && motorPower1 > 0)){
-                    motorPower1 = 0.225;
+                if((motorPower1 < 0.17 && motorPower1 > 0)){
+                    motorPower1 = 0.17;
                 }
-                if((motorPower1 > -0.225 && motorPower1 < 0)){
-                    motorPower1 = -0.225;
+                if((motorPower1 > -0.17 && motorPower1 < 0)){
+                    motorPower1 = -0.17;
                 }
-                setYaw = -25;
+                setYaw = 0;
 
                 motor0.setPower(motorPower0);
                 motor1.setPower(motorPower1);
                 motor2.setPower(motorPower0);
                 motor3.setPower(motorPower1);
-
                 position();
 
                 setPointClaw = startClaw;
-
                 servo0.setPower(-(errorClaw *  kpClaw));
 
 
-                if (headingError <= 0.3 && headingError >= -0.3){
-                    move5 = false;
-                    right = true;
+                if (headingError <= 0.15 && headingError >= -0.15 || newTime - oldTime >= 2.5){
+                    move6 = false;
                     armDown = true;
+                    middle = true;
                     motor0.setPower(0);
                     motor1.setPower(0);
                     motor2.setPower(0);
                     motor3.setPower(0);
                 }
             }
-
-            //turn right
-            /*
-            else if(move6 && !left && !middle){
-                if(move6First){
-                    start0 = motor0.getCurrentPosition();
-                    start1 = motor1.getCurrentPosition();
-                    start2 = motor2.getCurrentPosition();
-                    start3 = motor3.getCurrentPosition()
-                    move6First = false;
-                }
-                double motorPower0 = -(headingError * kpA);
-                double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.125 && motorPower0 > 0)){
-                    motorPower0 = 0.125;
-                }
-                if((motorPower0 > -0.125 && motorPower0 < 0)){
-                    motorPower0 = -0.125;
-                }
-                if((motorPower1 < 0.125 && motorPower1 > 0)){
-                    motorPower1 = 0.125;
-                }
-                if((motorPower1 > -0.125 && motorPower1 < 0)){
-                    motorPower1 = -0.125;
-                }
-                setYaw = -90;
-
-                motor0.setPower(motorPower0);
-                motor1.setPower(motorPower1);
-                motor2.setPower(motorPower0);
-                motor3.setPower(motorPower1);
-                position();
-
-                setPointClaw = startClaw;
-                servo0.setPower(-(errorClaw *  kpClaw));
-
-
-                if (headingError <= 0.15 && headingError >= -0.15){
-                    move6 = false;
-                    move7 = true;
-                    motor0.setPower(0);
-                    motor1.setPower(0);
-                    motor2.setPower(0);
-                    motor3.setPower(0);
-                }
-            }*/
-
-            //scan3
-            /*else if(move7){
-                if(move7First){
-                    oldTime = runtime.seconds();
-
-                    move7First = false;
-                }
-                newTime = runtime.seconds();
-                setPointClaw = startClaw;
-                servo0.setPower(-(errorClaw *  kpClaw));
-
-                if(recognitions >= 1){
-                    right = true;
-                    move7 = false;
-                    armDown = true;
-                }
-            }*/
 
             //arm down
             else if ((left || middle || right) && armDown){
@@ -569,22 +528,22 @@ public class RedFar extends LinearOpMode {
                 }
 
                 if(middle){
-                    setPoint0 = 0;
-                    setPoint1 = 0;
-                    setPoint2 = 0;
-                    setPoint3 = 0;
+                    setPoint0 = -200;
+                    setPoint1 = -200;
+                    setPoint2 = -200;
+                    setPoint3 = -200;
                 }
                 if(right){
-                    setPoint0 = -180;
-                    setPoint1 = -180;
-                    setPoint2 = -180;
-                    setPoint3 = -180;
+                    setPoint0 = -275;
+                    setPoint1 = -275;
+                    setPoint2 = -275;
+                    setPoint3 = -275;
                 }
                 if(left){
-                    setPoint0 = 0;
-                    setPoint1 = 0;
-                    setPoint2 = 0;
-                    setPoint3 = 0;
+                    setPoint0 = -270;
+                    setPoint1 = -270;
+                    setPoint2 = -270;
+                    setPoint3 = -270;
                 }
 
 
@@ -650,7 +609,7 @@ public class RedFar extends LinearOpMode {
                     }
                     clawPower = -(errorClaw * kpClaw);
                 }
-                servo0.setPower(clawPower);
+                servo0.setPower(-1);
 
 
 
@@ -661,23 +620,19 @@ public class RedFar extends LinearOpMode {
                 velocity = deltaPosition / deltaTime;
 
 
-                targetPosition0 = 0;
-                targetPosition1 = 0.125;
-                servo1.setPower(-targetPosition1);
-                servo2.setPower(targetPosition1);
+                targetPosition0 = 0.08;
+                targetPosition1 = 0.92;
+                servo1.setPosition(targetPosition0);
+                servo2.setPosition(targetPosition1);
 
-                if(newTime - oldTime >= 1.0){
+                if(newTime - oldTime >= 0.925){
                     servo0.setPower(0);
                     motor0.setPower(0);
                     motor1.setPower(0);
                     motor2.setPower(0);
                     motor3.setPower(0);
                     armDown = false;
-                    if(middle || left){
-                        push = true;
-                    }else{
-                        move8 = true;
-                    }
+                    push = true;
 
                 }
             }
@@ -696,17 +651,24 @@ public class RedFar extends LinearOpMode {
                 }
 
                 if(middle){
-                    setPoint0 = 150;
-                    setPoint1 = 150;
-                    setPoint2 = 150;
-                    setPoint3 = 150;
+                    setPoint0 = 206;
+                    setPoint1 = 206;
+                    setPoint2 = 206;
+                    setPoint3 = 206;
                 }
                 if(left){
-                    setPoint0 = 150;
-                    setPoint1 = 150;
-                    setPoint2 = 150;
-                    setPoint3 = 150;
+                    setPoint0 = 170;
+                    setPoint1 = 170;
+                    setPoint2 = 170;
+                    setPoint3 = 170;
                 }
+                if(right){
+                    setPoint0 = 285;
+                    setPoint1 = 285;
+                    setPoint2 = 285;
+                    setPoint3 = 285;
+                }
+
 
 
 
@@ -758,21 +720,7 @@ public class RedFar extends LinearOpMode {
                 }
 
 
-                if(servoPosition > 0 && !(errorClaw <= 30 && errorClaw >= -30)){
-                    clawPower = -0.75;
 
-                } else {
-                    servoPosition = analogInput.getVoltage() / 3.3 * 360 + counter * 360;
-
-                    errorClaw = setPointClaw - servoPosition;
-
-                    if(errorClaw <= -200 && back){
-                        counter -= 1;
-                        back = false;
-                        forward = true;
-                    }
-                    clawPower = -(errorClaw * kpClaw);
-                }
                 servo0.setPower(0);
 
 
@@ -784,10 +732,10 @@ public class RedFar extends LinearOpMode {
                 velocity = deltaPosition / deltaTime;
 
 
-                targetPosition0 = 0;
-                targetPosition1 = 0.125;
-                servo1.setPower(-targetPosition1);
-                servo2.setPower(targetPosition1);
+                targetPosition0 = 0.08;
+                targetPosition1 = 0.92;
+                servo1.setPosition(targetPosition0);
+                servo2.setPosition(targetPosition1);
 
                 if(newTime - oldTime >= 1.0){
                     motor0.setPower(0);
@@ -832,9 +780,6 @@ public class RedFar extends LinearOpMode {
                 }
                 errorClaw = setPointClaw - servoPosition;
 
-                servo0.setPower(0);
-
-
 
 
 
@@ -844,11 +789,11 @@ public class RedFar extends LinearOpMode {
                 velocity = deltaPosition / deltaTime;
 
 
-                targetPosition0 = 0;
+                targetPosition0 = 0.46;
                 servo0.setPower(0);
-                targetPosition1 = 0.2;
-                servo1.setPower(targetPosition1 * 2);
-                servo2.setPower(targetPosition1);
+                targetPosition1 = 0.92;
+                servo1.setPosition(targetPosition0);
+                servo2.setPosition(targetPosition1);
 
                 if(newTime - oldTime >= 1.0){
                     move8 = false;
@@ -868,22 +813,22 @@ public class RedFar extends LinearOpMode {
                     move9First = false;
                 }
                 if(middle){
-                    setPoint0 = -150;
-                    setPoint1 = -150;
-                    setPoint2 = -150;
-                    setPoint3 = -150;
+                    setPoint0 = -100;
+                    setPoint1 = -100;
+                    setPoint2 = -100;
+                    setPoint3 = -100;
                 }
                 if(right){
-                    setPoint0 = 180;
-                    setPoint1 = 180;
-                    setPoint2 = 180;
-                    setPoint3 = 180;
-                }
-                if(left){
                     setPoint0 = -150;
                     setPoint1 = -150;
                     setPoint2 = -150;
                     setPoint3 = -150;
+                }
+                if(left){
+                    setPoint0 = -80;
+                    setPoint1 = -80;
+                    setPoint2 = -80;
+                    setPoint3 = -80;
                 }
 
 
@@ -922,20 +867,6 @@ public class RedFar extends LinearOpMode {
                 }
                 errorClaw = setPointClaw - servoPosition;
 
-                if(servoPosition < 10){
-                    clawPower = 0.75;
-
-                } else {
-                    servoPosition = analogInput.getVoltage() / 3.3 * 360 + counter * 360;
-                    errorClaw = setPointClaw - servoPosition;
-
-                    if(errorClaw >= 200 && forward){
-                        counter += 1;
-                        forward = false;
-                        back = true;
-                    }
-                    clawPower = -(errorClaw * kpClaw);
-                }
                 servo0.setPower(1);
 
 
@@ -947,18 +878,15 @@ public class RedFar extends LinearOpMode {
                 velocity = deltaPosition / deltaTime;
 
 
-                targetPosition0 = 0;
+                targetPosition0 = 0.08;
+                targetPosition1 = 0.92;
+                servo1.setPosition(targetPosition0);
+                servo2.setPosition(targetPosition1);
 
-
-
-                targetPosition1 = 0.2;
-                servo1.setPower(-targetPosition1 * 0.05);
-                servo2.setPower(targetPosition1);
-
-                if(newTime - oldTime >= 0.5){
+                if(newTime - oldTime >= 1.15){
                     servo0.setPower(0);
                 }
-                if(newTime - oldTime >= 1.0){
+                if(newTime - oldTime >= 1.15){
                     move9 = false;
                     move10 = true;
                     motor0.setPower(0);
@@ -967,32 +895,266 @@ public class RedFar extends LinearOpMode {
                     motor3.setPower(0);
                 }
             }
-
-            //turn left
-            /*else if(!left && move10){
+            else if(move10 && (right)){
                 if(move10First){
+                    oldTime = runtime.seconds();
+                    start0 = motor0.getCurrentPosition();
+                    start1 = motor1.getCurrentPosition();
+                    start2 = motor2.getCurrentPosition();
+                    start3 = motor3.getCurrentPosition();
+                    move10First = false;
+                }
+                newTime = runtime.seconds();
+                double motorPower0 =-(headingError * kpA);
+                double motorPower1 = (headingError * kpA);
+                if((motorPower0 < 0.155 && motorPower0 > 0)){
+                    motorPower0 = 0.155;
+                }
+                if((motorPower0 > -0.155 && motorPower0 < 0)){
+                    motorPower0 = -0.155;
+                }
+                if((motorPower1 < 0.155 && motorPower1 > 0)){
+                    motorPower1 = 0.155;
+                }
+                if((motorPower1 > -0.155 && motorPower1 < 0)){
+                    motorPower1 = -0.155;
+                }
+                setYaw = 3;
+
+                motor0.setPower(motorPower0);
+                motor1.setPower(motorPower1);
+                motor2.setPower(motorPower0);
+                motor3.setPower(motorPower1);
+                position();
+
+                setPointClaw = startClaw;
+                servo0.setPower(0);
+
+
+                if ((headingError <= 0.15 && headingError >= -0.15 && newTime - oldTime >= 1.0) || newTime - oldTime >= 1.85){
+                    move10 = false;
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                    moveForward = true;
+                }
+            }
+            else if(move10 && left){
+                if(move10First){
+                    oldTime = runtime.seconds();
+                    start0 = motor0.getCurrentPosition();
+                    start1 = motor1.getCurrentPosition();
+                    start2 = motor2.getCurrentPosition();
+                    start3 = motor3.getCurrentPosition();
+                    move10First = false;
+                }
+                double motorPower0 = -(headingError * kpA);
+                double motorPower1 = (headingError * kpA);
+                if((motorPower0 < 0.16 && motorPower0 > 0)){
+                    motorPower0 = 0.16;
+                }
+                if((motorPower0 > -0.16 && motorPower0 < 0)){
+                    motorPower0 = -0.16;
+                }
+                if((motorPower1 < 0.16 && motorPower1 > 0)){
+                    motorPower1 = 0.16;
+                }
+                if((motorPower1 > -0.16 && motorPower1 < 0)){
+                    motorPower1 = -0.16;
+                }
+                newTime = runtime.seconds();
+                setYaw = 2;
+
+                motor0.setPower(motorPower0);
+                motor1.setPower(motorPower1);
+                motor2.setPower(motorPower0);
+                motor3.setPower(motorPower1);
+                position();
+
+                setPointClaw = startClaw;
+                servo0.setPower(0);
+
+
+                if ((headingError <= 0.15 && headingError >= -0.15 && newTime - oldTime >= 1.0) || newTime - oldTime >= 1.85){
+                    move10 = false;
+                    servo0.setPower(0);
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                    moveForward = true;
+                }
+            }
+            else if ((move10 && middle)){
+                if(move10First){
+                    oldTime = runtime.seconds();
+                    start0 = motor0.getCurrentPosition();
+                    start1 = motor1.getCurrentPosition();
+                    start2 = motor2.getCurrentPosition();
+                    start3 = motor3.getCurrentPosition();
+                    move10First = false;
+                }
+                newTime = runtime.seconds();
+                setPoint0 = -400;
+                setPoint1 = 400;
+                setPoint2 = 400;
+                setPoint3 = -400;
+                motorPower0 = -0.5;
+                motorPower1 = 0.5;
+                /*if(position0 < error0){
+                    motorPower0 = position0 * kp;
+                    motorPower1 = position1 * kp;
+                    motorPower2 = position2 * kp;
+                    motorPower3 = position3 * kp;
+                } else {
+                    motorPower0 = error0 * kp;
+                    motorPower1 = error1 * kp;
+                    motorPower2 = error2 * kp;
+                    motorPower3 = error3 * kp;
+                }*/
+
+                if((motorPower0 < 0.25 && motorPower0 > 0)){
+                    motorPower0 = 0.25;
+                }
+                if((motorPower0 > -0.25 && motorPower0 < 0)){
+                    motorPower0 = -0.25;
+                }
+                if((motorPower1 < 0.25 && motorPower1 > 0)){
+                    motorPower1 = 0.25;
+                }
+                if((motorPower1 > -0.25 && motorPower1 < 0)){
+                    motorPower1 = -0.25;
+                }
+
+                motor0.setPower(motorPower0);
+                motor1.setPower(motorPower1);
+                motor2.setPower(motorPower1);
+                motor3.setPower(motorPower0);
+                position();
+                if ((error0 <= 20 && error0 >= -20) || (error1 <= 20 && error1 >= -20) || newTime - oldTime >= 1.15) {
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                    servo0.setPower(0);
+                    move10 = false;
+                    moveForward = true;
+                }
+
+            }
+
+            else if(moveForward){
+                if(moveForwardFirst){
+                    oldTime = runtime.seconds();
+                    start0 = motor0.getCurrentPosition();
+                    start1 = motor1.getCurrentPosition();
+                    start2 = motor2.getCurrentPosition();
+                    start3 = motor3.getCurrentPosition();
+                    start0 -= 150;
+                    startClaw = servoPosition;
+                    moveForwardFirst = false;
+
+                }
+                updateTime();
+                previousPosition0 = position0;
+                position0 = motor0.getCurrentPosition() - start0;
+                deltaPosition0 = position0 - previousPosition0;
+                velocity0 = deltaPosition0 / deltaTime;
+
+                if(middle){
+                    setPoint0 = 1382;
+                    setPoint1 = 1382;
+                    setPoint2 = 1382;
+                    setPoint3 = 1382;
+                }
+                if(left){
+                    setPoint0 = 1500;
+                    setPoint1 = 1500;
+                    setPoint2 = 1500;
+                    setPoint3 = 1500;
+                }
+                if(right){
+                    setPoint0 = 1450;
+                    setPoint1 = 1450;
+                    setPoint2 = 1450;
+                    setPoint3 = 1450;
+                }
+
+                newTime = runtime.seconds();
+                position();
+                if(position0 < error0 - 400){
+                    motorPower0 = position0 * kp;
+                    motorPower1 = position1 * kp;
+                    motorPower2 = position2 * kp;
+                    motorPower3 = position3 * kp;
+                } else {
+                    motorPower0 = error0 * kp;
+                    motorPower1 = error1 * kp;
+                    motorPower2 = error2 * kp;
+                    motorPower3 = error3 * kp;
+                }
+
+                if((motorPower0 < 0.25 && motorPower0 > 0)){
+                    motorPower0 = 0.25;
+                }
+                if((motorPower0 > -0.25 && motorPower0 < 0)){
+                    motorPower0 = -0.25;
+                }
+                if((motorPower1 < 0.25 && motorPower1 > 0)){
+                    motorPower1 = 0.25;
+                }
+                if((motorPower1 > -0.25 && motorPower1 < 0)){
+                    motorPower1 = -0.25;
+                }
+
+                motor0.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
+                motor1.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
+                motor2.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
+                motor3.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
+                position();
+
+                setPointClaw = startClaw;
+
+
+                servo0.setPower(0);
+                if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 2.0) || newTime - oldTime >= 5){
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                    servo0.setPower(0);
+                    moveForward = false;
+                    moveTurn = true;
+
+                }
+            }
+            else if(moveTurn){
+                if(moveTurnFirst){
+                    oldTime = runtime.seconds();
                     start0 = motor0.getCurrentPosition();
                     start1 = motor1.getCurrentPosition();
                     start2 = motor2.getCurrentPosition();
                     start3 = motor3.getCurrentPosition();
                     setPointClaw = servoPosition;
-                    move10First = false;
+                    moveTurnFirst = false;
                 }
+                newTime = runtime.seconds();
                 double motorPower0 = -(headingError * kpA);
                 double motorPower1 = headingError * kpA;
-                if((motorPower0 < 0.125 && motorPower0 > 0)){
-                    motorPower0 = 0.125;
+                if((motorPower0 < 0.11 && motorPower0 > 0)){
+                    motorPower0 = 0.11;
                 }
-                if((motorPower0 > -0.125 && motorPower0 < 0)){
-                    motorPower0 = -0.125;
+                if((motorPower0 > -0.11 && motorPower0 < 0)){
+                    motorPower0 = -0.11;
                 }
-                if((motorPower1 < 0.125 && motorPower1 > 0)){
-                    motorPower1 = 0.125;
+                if((motorPower1 < 0.11 && motorPower1 > 0)){
+                    motorPower1 = 0.11;
                 }
-                if((motorPower1 > -0.125 && motorPower1 < 0)){
-                    motorPower1 = -0.125;
+                if((motorPower1 > -0.11 && motorPower1 < 0)){
+                    motorPower1 = -0.11;
                 }
-                setYaw = 90;
+                setYaw = -89;
 
                 motor0.setPower(motorPower0);
                 motor1.setPower(motorPower1);
@@ -1002,33 +1164,52 @@ public class RedFar extends LinearOpMode {
 
 
 
-                if (headingError <= 0.15 && headingError >= -0.15){
-                    move10 = false;
+                if ((headingError <= 0.15 && headingError >= -0.15 && newTime - oldTime >= 1.4) || newTime - oldTime >= 2.5){
+                    moveTurn = false;
                     move11 = true;
                     motor0.setPower(0);
                     motor1.setPower(0);
                     motor2.setPower(0);
                     motor3.setPower(0);
                 }
-            } else if(left && move10){
-                move10 = false;
-                move11 = true;
             }
-            */
-            //strafe
-            else if (move11) {
+            else if(move11){
                 if(move11First){
+                    oldTime = runtime.seconds();
                     start0 = motor0.getCurrentPosition();
                     start1 = motor1.getCurrentPosition();
                     start2 = motor2.getCurrentPosition();
                     start3 = motor3.getCurrentPosition();
+                    start0 -= 200;
+                    startClaw = servoPosition;
                     move11First = false;
+
                 }
-                setPoint0 = 1000;
-                setPoint1 = -1000;
-                setPoint2 = -1000;
-                setPoint3 = 1000;
-                if(position0 < error0){
+                updateTime();
+                previousPosition0 = position0;
+                position0 = motor0.getCurrentPosition() - start0;
+                deltaPosition0 = position0 - previousPosition0;
+                velocity0 = deltaPosition0 / deltaTime;
+
+                newTime = runtime.seconds();
+                if(middle){
+                    setPoint0 = 3700;
+                    setPoint1 = 3700;
+                    setPoint2 = 3700;
+                    setPoint3 = 3700;
+                } else if(left){
+                    setPoint0 = 2970;
+                    setPoint1 = 2970;
+                    setPoint2 = 2970;
+                    setPoint3 = 2970;
+                }
+                else if(right){
+                    setPoint0 = 3370;
+                    setPoint1 = 3370;
+                    setPoint2 = 3370;
+                    setPoint3 = 3370;
+                }
+                if(position0 < error0 - 600){
                     motorPower0 = position0 * kp;
                     motorPower1 = position1 * kp;
                     motorPower2 = position2 * kp;
@@ -1038,73 +1219,479 @@ public class RedFar extends LinearOpMode {
                     motorPower1 = error1 * kp;
                     motorPower2 = error2 * kp;
                     motorPower3 = error3 * kp;
+                }
+                if((motorPower0 < 0.25 && motorPower0 > 0)){
+                    motorPower0 = 0.25;
+                }
+                if((motorPower0 > -0.25 && motorPower0 < 0)){
+                    motorPower0 = -0.25;
+                }
+                if((motorPower1 < 0.25 && motorPower1 > 0)){
+                    motorPower1 = 0.25;
+                }
+                if((motorPower1 > -0.25 && motorPower1 < 0)){
+                    motorPower1 = -0.25;
                 }
 
-                motor0.setPower(error0 * kp);
-                motor1.setPower(error1 * kp);
-                motor2.setPower(error2 * kp);
-                motor3.setPower(error3 * kp);
+
+                motor0.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
+                motor1.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
+                motor2.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
+                motor3.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
                 position();
-                if ((error0 <= 10 && error0 >= -10) && (error1 <= 10 && error1 >= -10)) {
+
+                setPointClaw = startClaw;
+
+
+                servo0.setPower(-(errorClaw *  kpClaw));
+                if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 2.0) || newTime - oldTime >= 3.0) {
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                    servo0.setPower(0);
                     move11 = false;
-                    move12 = true;
+                    turnCenter = true;
+
                 }
             }
-            /*
-            // move forward
-            else if(move12){
-                if(move12First){
-                    start0 -= 200;
-                    move12First = false;
+            else if(turnCenter){
+                if(turnCenterFirst){
+                    oldTime = runtime.seconds();
+                    start0 = motor0.getCurrentPosition();
+                    start1 = motor1.getCurrentPosition();
+                    start2 = motor2.getCurrentPosition();
+                    start3 = motor3.getCurrentPosition();
+                    turnCenterFirst = false;
                 }
-                setPoint0 = 1800;
-                setPoint1 = 1800;
-                setPoint2 = 1800;
-                setPoint3 = 1800;
-                if(position0 < error0){
-                    motorPower0 = position0 * kp;
-                    motorPower1 = position1 * kp;
-                    motorPower2 = position2 * kp;
-                    motorPower3 = position3 * kp;
-                } else {
-                    motorPower0 = error0 * kp;
-                    motorPower1 = error1 * kp;
-                    motorPower2 = error2 * kp;
-                    motorPower3 = error3 * kp;
+                newTime = runtime.seconds();
+                double motorPower0 = -(headingError * kpA);
+                double motorPower1 = (headingError * kpA);
+                if((motorPower0 < 0.17 && motorPower0 > 0)){
+                    motorPower0 = 0.17;
                 }
+                if((motorPower0 > -0.17 && motorPower0 < 0)){
+                    motorPower0 = -0.17;
+                }
+                if((motorPower1 < 0.17 && motorPower1 > 0)){
+                    motorPower1 = 0.17;
+                }
+                if((motorPower1 > -0.17 && motorPower1 < 0)){
+                    motorPower1 = -0.17;
+                }
+                setYaw = -90;
+
                 motor0.setPower(motorPower0);
-                motor1.setPower(motorPower0);
+                motor1.setPower(motorPower1);
                 motor2.setPower(motorPower0);
-                motor3.setPower(motorPower0);
+                motor3.setPower(motorPower1);
                 position();
-                if ((error0 <= 10 && error0 >= -10)) {
-                    move12 = false;
-                    move13 = true;
+
+                setPointClaw = startClaw;
+                servo0.setPower(-(errorClaw *  kpClaw));
+
+
+                if (headingError <= 0.15 && headingError >= -0.15 || newTime - oldTime >= 1){
+                    turnCenter = false;
+                    move12 = true;
                     motor0.setPower(0);
                     motor1.setPower(0);
                     motor2.setPower(0);
                     motor3.setPower(0);
                 }
+            }
+            else if(move12){
+                if(move12First){
+                    oldTime = runtime.seconds();
+                    start0 = motor0.getCurrentPosition();
+                    start1 = motor1.getCurrentPosition();
+                    start2 = motor2.getCurrentPosition();
+                    start3 = motor3.getCurrentPosition();
+                    start0 -= 50;
+                    start1 += 50;
+                    move12First = false;
+                }
+                newTime = runtime.seconds();
+                if(middle){
+                    setPoint0 = 650;
+                    setPoint1 = -650;
+                    setPoint2 = -650;
+                    setPoint3 = 650;
+                    motorPower0 = 0.3515;
+                    motorPower1 = -0.3515;
+                }
+                if(left){
+                    setPoint0 = 540;
+                    setPoint1 = -540;
+                    setPoint2 = -540;
+                    setPoint3 = 540;
+                    motorPower0 = 0.3275;
+                    motorPower1 = -0.3275;
+                }
+                if(right){
+                    setPoint0 = 590;
+                    setPoint1 = -590;
+                    setPoint2 = -590;
+                    setPoint3 = 590;
+                    motorPower0 = 0.51;
+                    motorPower1 = -0.51;
+                }
+
+
+                position();
+
+                if((motorPower0 < 0.25 && motorPower0 > 0)){
+                    motorPower0 = 0.25;
+                }
+                if((motorPower0 > -0.25 && motorPower0 < 0)){
+                    motorPower0 = -0.25;
+                }
+                if((motorPower1 < 0.25 && motorPower1 > 0)){
+                    motorPower1 = 0.25;
+                }
+                if((motorPower1 > -0.25 && motorPower1 < 0)){
+                    motorPower1 = -0.25;
+                }
+
+                motor0.setPower(motorPower0);
+                motor1.setPower(motorPower1);
+                motor2.setPower(motorPower1);
+                motor3.setPower(motorPower0);
+
+                if (newTime - oldTime >= 1.2) {
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                    servo0.setPower(0);
+                    move12 = false;
+                    move13 = true;
+                }
 
             }
-
-            //strafe?
             else if(move13){
+                if(move13First){
+
+                    oldTime = runtime.seconds();
+                    start0 = motor0.getCurrentPosition();
+                    start1 = motor1.getCurrentPosition();
+                    start2 = motor2.getCurrentPosition();
+                    start3 = motor3.getCurrentPosition();
+                    start0 -= 100;
+                    startClaw = servoPosition;
+                    move13First = false;
+
+                }
+                position();
+                newTime = runtime.seconds();
+                setPoint = 365;
+                previousPosition = position;
+                position = arm0.getCurrentPosition() - start;
+                deltaPosition = position - previousPosition;
+                error = setPoint - position;
+                arm0.setPower((error * kp - (kd * velocity)));
+                arm1.setPower(-(error * kp - (kd * velocity)));
+
+                if(middle){
+                    setPoint0 = 590;
+                    setPoint1 = 590;
+                    setPoint2 = 590;
+                    setPoint3 = 590;
+                } else if(left){
+                    setPoint0 = 550;
+                    setPoint1 = 550;
+                    setPoint2 = 550;
+                    setPoint3 = 550;
+                }
+                else if(right){
+                    setPoint0 = 680;
+                    setPoint1 = 680;
+                    setPoint2 = 680;
+                    setPoint3 = 680;
+                }
+
+                if(position0 < error0){
+                    motorPower0 = position0 * kp;
+                    motorPower1 = position1 * kp;
+                    motorPower2 = position2 * kp;
+                    motorPower3 = position3 * kp;
+                } else {
+                    motorPower0 = error0 * kp;
+                    motorPower1 = error1 * kp;
+                    motorPower2 = error2 * kp;
+                    motorPower3 = error3 * kp;
+                }
+
+                if((motorPower0 < 0.25 && motorPower0 > 0)){
+                    motorPower0 = 0.25;
+                }
+                if((motorPower0 > -0.25 && motorPower0 < 0)){
+                    motorPower0 = -0.25;
+                }
+                if((motorPower1 < 0.25 && motorPower1 > 0)){
+                    motorPower1 = 0.25;
+                }
+                if((motorPower1 > -0.25 && motorPower1 < 0)){
+                    motorPower1 = -0.25;
+                }
+                motor0.setPower(motorPower0 * 0.6);
+                motor1.setPower(motorPower0 * 0.6);
+                motor2.setPower(motorPower0 * 0.6);
+                motor3.setPower(motorPower0 * 0.6);
+                position();
+
+                setPointClaw = startClaw;
+
+
+                servo0.setPower(-(errorClaw *  kpClaw));
+                if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 1.75) || newTime - oldTime >= 2.1) {
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                    servo0.setPower(0);
+                    move13 = false;
+                    move14 = true;
+
+                }
+            }
+
+            else if(move14){
+                if(move14First){
+                    oldTime = runtime.seconds();
+                    start0 = motor0.getCurrentPosition();
+                    start1 = motor1.getCurrentPosition();
+                    start2 = motor2.getCurrentPosition();
+                    start3 = motor3.getCurrentPosition();
+
+                    start0 -= 50;
+                    start1 += 50;
+                    final double newSetPointClaw = servoPosition -= 50;
+                    armSetDown = newSetPointClaw;
+
+                    setPointClaw = newSetPointClaw;
+
+
+                    move14First = false;
+
+                }
+                position();
+
+                setPoint = 365;
+                previousPosition = position;
+                position = arm0.getCurrentPosition() - start;
+                deltaPosition = position - previousPosition;
+                error = setPoint - position;
+                arm0.setPower((error * kp - (kd * velocity)));
+                arm1.setPower(-(error * kp - (kd * velocity)));
+                if(middle){
+                    setPoint0 = 0;
+                    setPoint1 = 0;
+                    setPoint2 = 0;
+                    setPoint3 = 0;
+                }
+                if(right){
+                    setPoint0 = 0;
+                    setPoint1 = 0;
+                    setPoint2 = 0;
+                    setPoint3 = 0;
+                }
+                if(left){
+                    setPoint0 = 0;
+                    setPoint1 = 0;
+                    setPoint2 = 0;
+                    setPoint3 = 0;
+                }
+
+
+                motorPower0 = error0 * kp;
+                motorPower1 = error1 * kp;
+                motorPower2 = error2 * kp;
+                motorPower3 = error3 * kp;
 
 
 
-            }*/
+                position();
+
+                motor0.setPower(error0 * kp);
+                motor1.setPower(error1 * kp);
+                motor2.setPower(error2 * kp);
+                motor3.setPower(error3 * kp);
+
+
+
+                newTime = runtime.seconds();
+
+
+                if(!right){
+                    if(newTime - oldTime >= 0.31){
+                        servo0.setPower(-1);
+                    }
+                } else if(middle){
+                    if(newTime - oldTime >= 0.475){
+                        servo0.setPower(-1);
+                    }
+                } else {
+                    if(newTime - oldTime >= 0.4){
+                        servo0.setPower(-1);
+                    }
+                }
+
+
+
+
+                updateTime();
+
+                velocity = deltaPosition / deltaTime;
+
+
+                targetPosition0 = 0.08;
+                targetPosition1 = 0.92;
+                servo1.setPosition(targetPosition0);
+                servo2.setPosition(targetPosition1);
+
+                if(newTime - oldTime >= 1.0){
+                    servo0.setPower(0);
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                    move14 = false;
+                    move15 = true;
+                }
+            }
+            if(move15){
+                if(move15First){
+                    oldTime = runtime.seconds();
+                    setPointClaw = armSetDown;
+
+                    move15First = false;
+                }
+
+
+                newTime = runtime.seconds();
+                setPoint = 365;
+                previousPosition = position;
+                position = arm0.getCurrentPosition() - start;
+                deltaPosition = position - previousPosition;
+                error = setPoint - position;
+                arm0.setPower((error * kp - (kd * velocity)));
+                arm1.setPower(-(error * kp - (kd * velocity)));
+
+
+
+
+                if(errorClaw >= 200 && forward){
+                    counter += 1;
+                    forward = false;
+                    back = true;
+                }
+                if(errorClaw <= -200 && back){
+                    counter -= 1;
+                    back = false;
+                    forward = true;
+                }
+                errorClaw = setPointClaw - servoPosition;
+
+                servo0.setPower(0);
+
+
+
+
+
+
+                updateTime();
+
+                velocity = deltaPosition / deltaTime;
+
+
+                targetPosition0 = 0.08;
+                servo0.setPower(0);
+                targetPosition1 = 0.45;
+                servo1.setPosition(targetPosition0);
+                servo2.setPosition(targetPosition1);
+
+                if(newTime - oldTime >= 2.5){
+                    move15 = false;
+                    move16 = true;
+                }
+            }
+            if(move16){
+                if(move16First){
+                    oldTime = runtime.seconds();
+                    start0 = motor0.getCurrentPosition();
+                    start1 = motor1.getCurrentPosition();
+                    start2 = motor2.getCurrentPosition();
+                    start3 = motor3.getCurrentPosition();
+
+                    setPointClaw = startClaw - 20;
+                    move16First = false;
+                }
+
+
+
+                motorPower0 = error0 * kp;
+                motorPower1 = error1 * kp;
+                motorPower2 = error2 * kp;
+                motorPower3 = error3 * kp;
+
+                position();
+
+
+                newTime = runtime.seconds();
+                setPoint = 365;
+                previousPosition = position;
+                position = arm0.getCurrentPosition() - start;
+                deltaPosition = position - previousPosition;
+                error = setPoint - position;
+                arm0.setPower((error * kp - (kd * velocity)));
+                arm1.setPower(-(error * kp - (kd * velocity)));
+
+
+
+                if(errorClaw >= 200 && forward){
+                    counter += 1;
+                    forward = false;
+                    back = true;
+                }
+                if(errorClaw <= -200 && back){
+                    counter -= 1;
+                    back = false;
+                    forward = true;
+                }
+                errorClaw = setPointClaw - servoPosition;
+
+                servo0.setPower(1);
+
+
+
+
+
+                updateTime();
+
+                velocity = deltaPosition / deltaTime;
+
+
+                targetPosition0 = 0.08;
+                targetPosition1 = 0.92;
+                servo1.setPosition(0);
+                servo2.setPosition(0);
+
+                if(newTime - oldTime >= 1.15){
+                    move16 = false;
+                    servo0.setPower(0);
+                    motor0.setPower(0);
+                    motor1.setPower(0);
+                    motor2.setPower(0);
+                    motor3.setPower(0);
+                }
+            }
 
             errorClaw = setPointClaw - servoPosition;
 
 
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
 
-            /*telemetry.addData("error0 ", error0);
-            telemetry.addData("error1 ", error1);
-            telemetry.addData("position0 ", position0);
-            telemetry.addData("position1 ", position1);
-            telemetry.addData("start0 ", start0);*/
             telemetry.addData("Objects: ", recognitions);
             telemetry.addData("Yaw: ", orientation.getYaw(AngleUnit.DEGREES));
             //telemetry.addData("Time ", runtime.seconds());
@@ -1112,6 +1699,10 @@ public class RedFar extends LinearOpMode {
             telemetry.addData("Position1 ", position1);
             telemetry.addData("Position2 ", position2);
             telemetry.addData("Position3 ", position3);
+            telemetry.addData("setPoint0 ", setPoint0);
+            telemetry.addData("setPoint1 ", setPoint1);
+            telemetry.addData("setPoint2 ", setPoint2);
+            telemetry.addData("setPoint3 ", setPoint3);
             telemetry.addData("servoPosition ", servoPosition);
             telemetry.addData("setpoint ", setPointClaw);
             telemetry.addData("Servo Power ", servo0.getPower());
@@ -1211,6 +1802,7 @@ public class RedFar extends LinearOpMode {
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }   // end for() loop
+        recognitions = currentRecognitions.size();
 
     }   // end method telemetryTfod()
 }

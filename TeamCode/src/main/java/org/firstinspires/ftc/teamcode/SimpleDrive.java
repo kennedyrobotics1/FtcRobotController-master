@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Iterat
 
 
 // todo: write your code here
+@Disabled
 @TeleOp(name = "SimpleDrive", group = "Iterative OpMode")
 
 public class SimpleDrive extends BasicOpMode_Iterative {

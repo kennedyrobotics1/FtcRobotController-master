@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.ServoImpl;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcontroller.external.samples.BasicOpMode_Iterative;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -33,13 +34,13 @@ public class WDrive extends BasicOpMode_Iterative {
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
     private CRServo servo0 = null;
-    private CRServo servo1 = null;
-    private CRServo servo2 = null;
+    private ServoImplEx servo1 = null;
+    private ServoImplEx servo2 = null;
     private AnalogInput analogInput;
     double targetPosition0 = 0;
-    double targetPosition1 = 0;
+    double targetPosition1;
 
-    double targetPosition2 = 0;
+    double targetPosition2;
 
     private DistanceSensor sensorDistance;
     private ColorSensor colorSensor;
@@ -60,6 +61,10 @@ public class WDrive extends BasicOpMode_Iterative {
     double start = 0;
     double error = setPoint - position;
 
+    double start5;
+    double start6;
+    double start7;
+    double start8;
     double setPoint1 = 0;
     double position1;
     double start1 = 0;
@@ -112,6 +117,8 @@ public class WDrive extends BasicOpMode_Iterative {
     boolean first = true;
 
     double startClaw;
+    boolean moveTurnFirst = true;
+
 
     public void init() {
         motor0  = hardwareMap.get(DcMotor.class, "motor0");
@@ -129,9 +136,9 @@ public class WDrive extends BasicOpMode_Iterative {
 
         servo0 = hardwareMap.get(CRServo.class, "servo0");
         launcher = hardwareMap.get(CRServo.class, "launcher");
-        servo1 = hardwareMap.get(CRServo.class, "servo1");
+        servo1 = hardwareMap.get(ServoImplEx.class, "servo1");
 
-        servo2 = hardwareMap.get(CRServo.class, "servo2");
+        servo2 = hardwareMap.get(ServoImplEx.class, "servo2");
 
         analogInput = hardwareMap.get(AnalogInput.class, "servoEncoder");
         imu = hardwareMap.get(IMU.class, "imu");
@@ -165,7 +172,6 @@ public class WDrive extends BasicOpMode_Iterative {
         counter = 0;
         previousPositionClaw = servoPosition;
         servoPosition = analogInput.getVoltage() / 3.3 * 360 + counter * 360;
-        targetPosition1 = 0;
         startClaw = servoPosition;
 
         positionClaw = servoPosition - startClaw;
@@ -174,10 +180,11 @@ public class WDrive extends BasicOpMode_Iterative {
 
         targetPosition0 = 0;
         servo0.setPower(-(errorClaw * kpClaw));
-        targetPosition1 = 0;
-        targetPosition2 = 0;
-        servo1.setPower(0);
-        servo2.setPower(0);
+
+        targetPosition1 = 0.08;
+        targetPosition2 = 0.92;
+        servo1.setPosition(targetPosition1);
+        servo2.setPosition(targetPosition2);
 
         launcher.setPower(0);
 
@@ -193,6 +200,7 @@ public class WDrive extends BasicOpMode_Iterative {
 
         armPower = (error * kp - (kd * velocity));
         realArmPower = Math.max(armPower, -0.7);
+        boolean moveTurnFirst = true;
     }
 
     public void loop(){
@@ -224,9 +232,9 @@ public class WDrive extends BasicOpMode_Iterative {
         }
 
         if(gamepad2.right_trigger > 0.05){
-            setPoint1 += 750 * deltaTime;
+            setPoint1 += 2400 * deltaTime;
         } else if (gamepad2.left_trigger > 0.05){
-            setPoint1 -= 750 * deltaTime;
+            setPoint1 -= 2400 * deltaTime;
         }
 
         previousPosition = position;
@@ -258,22 +266,43 @@ public class WDrive extends BasicOpMode_Iterative {
 
         velocity = deltaPosition / deltaTime;
 
-        double x = gamepad1.left_stick_x;
-        double y = -gamepad1.left_stick_y;
-        double r = gamepad1.right_stick_x;
-        double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(r), 1);
 
 
-        motor0Power = (y + x + r) / denominator;
-        motor1Power = (y - x - r) / denominator;
-        motor2Power = (y - x + r) / denominator;
-        motor3Power = (y + x - r) / denominator;
-
-        if(gamepad1.a || gamepad1.dpad_down){
-            motor0.setPower(0.2 * motor0Power);
-            motor1.setPower(0.2 * motor1Power);
-            motor2.setPower(0.2 * motor2Power);
-            motor3.setPower(0.2 * motor3Power);
+        if(gamepad1.dpad_up){
+            motor0Power = 0.5;
+            motor1Power = 0.5;
+            motor2Power = 0.5;
+            motor3Power = 0.5;
+        } else if(gamepad1.dpad_down) {
+            motor0Power = -0.5;
+            motor1Power = -0.5;
+            motor2Power = -0.5;
+            motor3Power = -0.5;
+        } else if(gamepad1.dpad_left){
+            motor0Power = -0.5;
+            motor1Power = 0.5;
+            motor2Power = -0.5;
+            motor3Power = 0.5;
+        } else if(gamepad1.dpad_right){
+            motor0Power = 0.4;
+            motor1Power = -0.4;
+            motor2Power = 0.4;
+            motor3Power = -0.4;
+        } else {
+            double x = gamepad1.left_stick_x;
+            double y = -gamepad1.left_stick_y;
+            double r = gamepad1.right_stick_x;
+            double denominator = Math.max(Math.abs(x) + Math.abs(y) + Math.abs(r), 1);
+            motor0Power = (y + x + r) / denominator;
+            motor1Power = (y - x - r) / denominator;
+            motor2Power = (y - x + r) / denominator;
+            motor3Power = (y + x - r) / denominator;
+        }
+        if(gamepad1.a){
+            motor0.setPower(0.4 * motor0Power);
+            motor1.setPower(0.4 * motor1Power);
+            motor2.setPower(0.4 * motor2Power);
+            motor3.setPower(0.4 * motor3Power);
         } else {
             motor0.setPower(motor0Power);
             motor1.setPower(motor1Power);
@@ -304,57 +333,64 @@ public class WDrive extends BasicOpMode_Iterative {
         servo0.setPower(-(errorClaw * kpClaw));
 
         if(gamepad2.right_bumper){
-            setPointClaw = startClaw;
+
+            realArmPower = Math.min(armPower, 0.6);
+            setPoint = 1652;
         }
 
-        servo1.setPower(-targetPosition1);
-        servo2.setPower(targetPosition2);
+        servo1.setPosition(targetPosition1);
+        servo2.setPosition(targetPosition2);
 
 
         if (gamepad2.b){
-            targetPosition2 = -0.15;
+            targetPosition2 = 0.41;
             slow = false;
         } else if (gamepad2.x){
-            targetPosition2 = 0.25;
+            targetPosition2 = 0.92;
             oldTime = runtime.seconds();
             slow = true;
-        } else if(gamepad2.a){
+        } /*else if(gamepad2.a){
             targetPosition2 = 0;
             slow = false;
-        }
+        }*/
 
         newTime = runtime.seconds();
 
-        if(newTime - oldTime >= 0.5 && slow){
+        /*if(newTime - oldTime >= 0.5 && slow){
             targetPosition2 = 0.2;
-        }
+        }*/
 
         if (gamepad2.dpad_left){
-            targetPosition1 = -0.15;
+            targetPosition1 = 0.55;
             slow1 = false;
         } else if (gamepad2.dpad_right){
-            targetPosition1 = 0.25;
+            targetPosition1 = 0.08;
             oldTime1 = runtime.seconds();
             slow1 = true;
-        } else if(gamepad2.dpad_down){
+        } /*else if(gamepad2.dpad_down){
             targetPosition1 = 0;
             slow1 = false;
-        }
+        }*/
 
         newTime1 = runtime.seconds();
-
+        /*
         if(newTime1 - oldTime1 >= 0.5 && slow1){
             targetPosition1 = 0.2;
-        }
+        }*/
 
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         telemetry.addData("Yaw: ", orientation.getYaw(AngleUnit.DEGREES));
-        telemetry.addData("ServoStart ", startClaw);
+        /*telemetry.addData("ServoStart ", startClaw);
         telemetry.addData("Current Position Arm0: ", arm0.getCurrentPosition());
         telemetry.addData("Current Position Climb0: ", climb0.getCurrentPosition());
         telemetry.addData("Current servoPosition: ", servoPosition);
         telemetry.addData("Motor power ", motor0Power);
-        telemetry.addData("Arm Power: ", realArmPower);
+        telemetry.addData("Arm Power: ", realArmPower);*/
+        telemetry.addData("TargetPosition1 ", targetPosition1);
+        telemetry.addData("TargetPosition2 ", targetPosition2);
+        telemetry.addData("servo position1 ", servo1.getPosition());
+        telemetry.addData("servo position2 ", servo2.getPosition());
+
         telemetry.update();
     }
     public void updateTime() {
