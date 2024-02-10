@@ -465,24 +465,15 @@ public class BlueFar extends LinearOpMode {
                 motor2.setPower(error2 * kp);
                 motor3.setPower(error3 * kp);
 
-
-
                 newTime = runtime.seconds();
                 setPointArm = 0;
                 arm0.setPower((errorArm * kp - (kd * velocityArm)));
                 arm1.setPower(-(errorArm * kp - (kd * velocityArm)));
 
-
+                //moves claw to ground
                 servo0.setPower(-1);
 
-
-
-
-
                 updateTime();
-
-                velocityArm = deltaPositionArm / deltaTime;
-
 
                 targetPositionLeft = closedLeft;
                 targetPositionRight = closedRight;
@@ -581,7 +572,6 @@ public class BlueFar extends LinearOpMode {
 
                 updateTime();
 
-                velocityArm = deltaPositionArm / deltaTime;
 
 
                 targetPositionLeft = closedLeft;
@@ -614,7 +604,6 @@ public class BlueFar extends LinearOpMode {
 
                 updateTime();
 
-                velocityArm = deltaPositionArm / deltaTime;
 
 
                 targetPositionLeft = closedLeft;
@@ -686,7 +675,6 @@ public class BlueFar extends LinearOpMode {
 
                 updateTime();
 
-                velocityArm = deltaPositionArm / deltaTime;
 
 
                 targetPositionLeft = closedLeft;
@@ -1235,7 +1223,6 @@ public class BlueFar extends LinearOpMode {
 
                 updateTime();
 
-                velocityArm = deltaPositionArm / deltaTime;
 
 
                 targetPositionLeft = closedLeft;
@@ -1276,7 +1263,7 @@ public class BlueFar extends LinearOpMode {
 
                 updateTime();
 
-                velocityArm = deltaPositionArm / deltaTime;
+
 
                 if(!far){
                     if(targetPositionLeft < 0.55){
@@ -1426,7 +1413,6 @@ public class BlueFar extends LinearOpMode {
 
                 updateTime();
 
-                velocityArm = deltaPositionArm / deltaTime;
 
 
                 targetPositionLeft = closedLeft;
@@ -1486,6 +1472,8 @@ public class BlueFar extends LinearOpMode {
         positionArm = arm0.getCurrentPosition() - startArm;
         deltaPositionArm = positionArm - previousPositionArm;
         errorArm = setPointArm - positionArm;
+        velocityArm = deltaPositionArm / deltaTime;
+
 
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         headingError = setYaw - orientation.getYaw(AngleUnit.DEGREES);
