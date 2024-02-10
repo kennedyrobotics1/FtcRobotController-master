@@ -1243,11 +1243,14 @@ public class BlueFar extends LinearOpMode {
                     motorPower1 = -0.25;
                 }
 
+                YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
 
-                motor0.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
-                motor1.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
-                motor2.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
-                motor3.setPower((motorPower0 - (velocity0 * 1.0/600)) * 0.5);
+
+                motor0.setPower((motorPower0 - (velocity0 * 1.0/600) - headingError * 0.0125) * 0.5);
+                motor1.setPower((motorPower0 - (velocity0 * 1.0/600) + headingError * 0.0125) * 0.5);
+                motor2.setPower((motorPower0 - (velocity0 * 1.0/600) - headingError * 0.0125) * 0.5);
+                motor3.setPower((motorPower0 - (velocity0 * 1.0/600) + headingError * 0.0125) * 0.5);
+
                 position();
 
                 setPointClaw = startClaw;
@@ -1336,8 +1339,8 @@ public class BlueFar extends LinearOpMode {
                     setPoint1 = 470;
                     setPoint2 = 470;
                     setPoint3 = -470;
-                    motorPower0 = -0.3335;
-                    motorPower1 = 0.3335;
+                    motorPower0 = -0.3515;
+                    motorPower1 = 0.3515;
                 }
                 else if(right){
                     setPoint0 = -600;
@@ -1345,8 +1348,8 @@ public class BlueFar extends LinearOpMode {
                     setPoint2 = 600;
                     setPoint3 = -600;
 
-                    motorPower0 = -0.50215;
-                    motorPower1 = 0.50215;
+                    motorPower0 = -0.498;
+                    motorPower1 = 0.498;
                 }
 
 
@@ -1377,10 +1380,10 @@ public class BlueFar extends LinearOpMode {
                     motorPower1 = -0.25;
                 }
 
-                    motor0.setPower(motorPower0);
-                    motor1.setPower(motorPower1);
-                    motor2.setPower(motorPower1);
-                    motor3.setPower(motorPower0);
+                    motor0.setPower(motorPower0 + headingError * 0.0125);
+                    motor1.setPower(motorPower1 + headingError * 0.0125);
+                    motor2.setPower(motorPower1 - headingError * 0.0125);
+                    motor3.setPower(motorPower0 - headingError * 0.0125);
                 if(left) {
                     if (newTime - oldTime >= 1.2) {
                         motor0.setPower(0);
@@ -1493,7 +1496,7 @@ public class BlueFar extends LinearOpMode {
                 setPointClaw = startClaw;
 
 
-                if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 1.75) || newTime - oldTime >= 1.325) {
+                if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 1.75) || newTime - oldTime >= 1) {
                     motor0.setPower(0);
                     motor1.setPower(0);
                     motor2.setPower(0);
@@ -1570,7 +1573,7 @@ public class BlueFar extends LinearOpMode {
 
 
                 if(middle){
-                    if(newTime - oldTime >= 0.315){
+                    if(newTime - oldTime >= 0.3375){
                         servo0.setPower(-1);
                     }
 
@@ -1580,7 +1583,7 @@ public class BlueFar extends LinearOpMode {
                     }
 
                 } else {
-                    if(newTime - oldTime >= 0.2625){
+                    if(newTime - oldTime >= 0.2575){
                         servo0.setPower(-1);
                     }
                 }
@@ -1637,7 +1640,7 @@ public class BlueFar extends LinearOpMode {
                 newTime = runtime.seconds();
 
 
-                setPoint = 335;
+                setPoint = 260;
                 previousPosition = position;
                 position = arm0.getCurrentPosition() - start;
                 deltaPosition = position - previousPosition;
@@ -1650,9 +1653,16 @@ public class BlueFar extends LinearOpMode {
 
                 velocity = deltaPosition / deltaTime;
 
-                if(targetPosition0 < 0.55){
-                    targetPosition0 += 0.009;
+                if(!left){
+                    if(targetPosition0 < 0.55){
+                        targetPosition0 += 0.009;
+                    }
+                } else {
+                    if(targetPosition0 < 0.55){
+                        targetPosition0 += 0.012;
+                    }
                 }
+
                 servo0.setPower(0);
                 targetPosition1 = 0.92;
                 servo2.setPosition(targetPosition1);
@@ -1668,8 +1678,13 @@ public class BlueFar extends LinearOpMode {
                         move15 = false;
                         move17 = true;
                     }
+                } else if(right){
+                    if(newTime - oldTime >= 0.75){
+                        move15 = false;
+                        move17 = true;
+                    }
                 } else {
-                    if(newTime - oldTime >= 1.75){
+                    if(newTime - oldTime >= 0.6){
                         move15 = false;
                         move17 = true;
                     }
@@ -1696,7 +1711,7 @@ public class BlueFar extends LinearOpMode {
                     setPoint1 = 450;
                     setPoint2 = 450;
                     setPoint3 = 450;
-                    motorPower0 = -0.27;
+                    motorPower0 = -0.29;
                 }
                 if(middle){
                     setPoint0 = 450;
@@ -1713,7 +1728,7 @@ public class BlueFar extends LinearOpMode {
                     motorPower0 = -0.27;
                 }
 
-                setPoint = 335;
+                setPoint = 260;
                 previousPosition = position;
                 position = arm0.getCurrentPosition() - start;
                 deltaPosition = position - previousPosition;
@@ -1742,15 +1757,28 @@ public class BlueFar extends LinearOpMode {
                 setPointClaw = startClaw;
 
 
-                if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 0.25) || newTime - oldTime >= 0.25) {
-                    motor0.setPower(0);
-                    motor1.setPower(0);
-                    motor2.setPower(0);
-                    motor3.setPower(0);
-                    servo0.setPower(0);
-                    move17 = false;
-                    move16 = true;
+                if(!left){
+                    if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 0.25) || newTime - oldTime >= 0.25) {
+                        motor0.setPower(0);
+                        motor1.setPower(0);
+                        motor2.setPower(0);
+                        motor3.setPower(0);
+                        servo0.setPower(0);
+                        move17 = false;
+                        move16 = true;
 
+                    }
+                } else {
+                    if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 0.25) || newTime - oldTime >= 0.335) {
+                        motor0.setPower(0);
+                        motor1.setPower(0);
+                        motor2.setPower(0);
+                        motor3.setPower(0);
+                        servo0.setPower(0);
+                        move17 = false;
+                        move16 = true;
+
+                    }
                 }
             }
             else if(move16){
