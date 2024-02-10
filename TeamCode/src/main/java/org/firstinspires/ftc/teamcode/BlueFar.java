@@ -139,8 +139,8 @@ public class BlueFar extends LinearOpMode {
         position3 = motor3.getCurrentPosition() - start3;
 
         servo0 = hardwareMap.get(CRServo.class, "servo0");
-        servoLeft = hardwareMap.get(ServoImplEx.class, "servoLeft");
-        servoRight = hardwareMap.get(ServoImplEx.class, "servoRight");
+        servoLeft = hardwareMap.get(ServoImplEx.class, "servo1");
+        servoRight = hardwareMap.get(ServoImplEx.class, "servo2");
 
         arm0  = hardwareMap.get(DcMotor.class, "arm0");
         arm1  = hardwareMap.get(DcMotor.class, "arm1");
@@ -273,7 +273,7 @@ public class BlueFar extends LinearOpMode {
                     motor3.setPower(0);
                     servo0.setPower(0);
                     move1 = false;
-                    move3 = true;
+                    move2 = true;
 
                 }
 
