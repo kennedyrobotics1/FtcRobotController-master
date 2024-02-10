@@ -221,9 +221,9 @@ public class BlueFar extends LinearOpMode {
         boolean pushFirst = true;
         boolean armDown = false;
         boolean armDownFirst = true;
-        boolean left = false;
+        boolean far = false;
         boolean middle = false;
-        boolean right = false;
+        boolean close = false;
         boolean turnCenter = false;
         boolean turnCenterFirst = true;
 
@@ -262,8 +262,6 @@ public class BlueFar extends LinearOpMode {
                 motor3.setPower(motorPower0);
                 position();
 
-
-
                 if ((error0 <= 20 && error0 >= -20)) {
                     motor0.setPower(0);
                     motor1.setPower(0);
@@ -277,14 +275,15 @@ public class BlueFar extends LinearOpMode {
 
             }
 
-            else if (move3) {
-                if(move3First){
+            //turn to left tape
+            else if (move2) {
+                if(move2First){
                     oldTime = runtime.seconds();
                     start0 = motor0.getCurrentPosition();
                     start1 = motor1.getCurrentPosition();
                     start2 = motor2.getCurrentPosition();
                     start3 = motor3.getCurrentPosition();
-                    move3First = false;
+                    move2First = false;
                 }
                 newTime = runtime.seconds();
                 double motorPower0 = -(headingError * kpHeading);
@@ -305,21 +304,22 @@ public class BlueFar extends LinearOpMode {
                     motor1.setPower(0);
                     motor2.setPower(0);
                     motor3.setPower(0);
-                    move3 = false;
-                    move2 = true;
+                    move2 = false;
+                    move3 = true;
 
                 }
             }
-            else if(move2){
-                if(move2First){
+            //scan
+            else if(move3){
+                if(move3First){
                     oldTime = runtime.seconds();
-                    move2First = false;
+                    move3First = false;
                 }
                 newTime = runtime.seconds();
                 telemetryTfod();
-                if(recognitions >= 1 || left){
-                    right = true;
-                    move2 = false;
+                if(recognitions >= 1){
+                    close = true;
+                    move3 = false;
                     armDown = true;
                     motor0.setPower(0);
                     motor1.setPower(0);
@@ -327,8 +327,8 @@ public class BlueFar extends LinearOpMode {
                     motor3.setPower(0);
                 }
                 if(newTime - oldTime >= 2.55){
-                    move2 = false;
-                    move5 = true;
+                    move3 = false;
+                    move4 = true;
                     motor0.setPower(0);
                     motor1.setPower(0);
                     motor2.setPower(0);
@@ -336,14 +336,15 @@ public class BlueFar extends LinearOpMode {
                 }
             }
 
-            else if(move5 && !left){
-                if(move5First){
+            //turn to right tape
+            else if(move4 && !far){
+                if(move4First){
                     oldTime = runtime.seconds();
                     start0 = motor0.getCurrentPosition();
                     start1 = motor1.getCurrentPosition();
                     start2 = motor2.getCurrentPosition();
                     start3 = motor3.getCurrentPosition();
-                    move5First = false;
+                    move4First = false;
                 }
                 newTime = runtime.seconds();
                 double motorPower0 = -(headingError * kpHeading);
@@ -360,8 +361,8 @@ public class BlueFar extends LinearOpMode {
 
 
                 if (headingError <= 0.3 && headingError >= -0.3 && newTime - oldTime >= 0.5 || newTime - oldTime >= 1.1){
-                    move5 = false;
-                    move4 = true;
+                    move4 = false;
+                    move5 = true;
                     motor0.setPower(0);
                     motor1.setPower(0);
                     motor2.setPower(0);
@@ -369,26 +370,26 @@ public class BlueFar extends LinearOpMode {
                 }
             }
 
-
-            else if(move4){
-                if(move4First){
+            //scan
+            else if(move5){
+                if(move5First){
                     oldTime = runtime.seconds();
-
-                    move4First = false;
+                    move5First = false;
                 }
                 newTime = runtime.seconds();
                 telemetryTfod();
                 if(recognitions >= 1){
-                    left = true;
-                    move4 = false;
+                    far = true;
+                    move5 = false;
                     armDown = true;
                 }
                 if(newTime - oldTime >= 1.8){
-                    move4 = false;
+                    move5 = false;
                     move6 = true;
                 }
             }
 
+            //turn to center tape
             else if(move6){
                 if(move6First){
                     oldTime = runtime.seconds();
@@ -424,17 +425,14 @@ public class BlueFar extends LinearOpMode {
 
 
             //arm down
-            else if ((left || middle || right) && armDown){
+            else if ((far || middle || close) && armDown){
                 if(armDownFirst){
                     oldTime = runtime.seconds();
                     start0 = motor0.getCurrentPosition();
                     start1 = motor1.getCurrentPosition();
                     start2 = motor2.getCurrentPosition();
                     start3 = motor3.getCurrentPosition();
-
-
                     armDownFirst = false;
-
                 }
 
                 if(middle){
@@ -443,27 +441,23 @@ public class BlueFar extends LinearOpMode {
                     setPoint2 = -250;
                     setPoint3 = -250;
                 }
-                if(right){
+                if(close){
                     setPoint0 = -250;
                     setPoint1 = -250;
                     setPoint2 = -250;
                     setPoint3 = -250;
                 }
-                if(left){
+                //backs up to the side to avoid trusses
+                if(far){
                     setPoint0 = -440;
                     setPoint1 = -280;
                     setPoint2 = -440;
                     setPoint3 = -280;
                 }
-
-
                 motorPower0 = error0 * kp;
                 motorPower1 = error1 * kp;
                 motorPower2 = error2 * kp;
                 motorPower3 = error3 * kp;
-
-
-
                 position();
 
                 motor0.setPower(error0 * kp);
@@ -475,10 +469,6 @@ public class BlueFar extends LinearOpMode {
 
                 newTime = runtime.seconds();
                 setPointArm = 0;
-                previousPositionArm = positionArm;
-                positionArm = arm0.getCurrentPosition() - startArm;
-                deltaPositionArm = positionArm - previousPositionArm;
-                errorArm = setPointArm - positionArm;
                 arm0.setPower((errorArm * kp - (kd * velocityArm)));
                 arm1.setPower(-(errorArm * kp - (kd * velocityArm)));
 
@@ -499,7 +489,7 @@ public class BlueFar extends LinearOpMode {
                 servoLeft.setPosition(targetPositionLeft);
                 servoRight.setPosition(targetPositionRight);
 
-                if(!left){
+                if(!far){
                     if(newTime - oldTime >= 0.925){
                         servo0.setPower(0);
                         motor0.setPower(0);
@@ -544,13 +534,13 @@ public class BlueFar extends LinearOpMode {
                     setPoint2 = 205;
                     setPoint3 = 205;
                 }
-                if(left){
+                if(far){
                     setPoint0 = 390;
                     setPoint1 = 240;
                     setPoint2 = 390;
                     setPoint3 = 240;
                 }
-                if(right){
+                if(close){
                     setPoint0 = 242;
                     setPoint1 = 242;
                     setPoint2 = 242;
@@ -579,10 +569,6 @@ public class BlueFar extends LinearOpMode {
 
                 newTime = runtime.seconds();
                 setPointArm = 0;
-                previousPositionArm = positionArm;
-                positionArm = arm0.getCurrentPosition() - startArm;
-                deltaPositionArm = positionArm - previousPositionArm;
-                errorArm = setPointArm - positionArm;
                 arm0.setPower((errorArm * kp - (kd * velocityArm)));
                 arm1.setPower(-(errorArm * kp - (kd * velocityArm)));
 
@@ -623,10 +609,6 @@ public class BlueFar extends LinearOpMode {
 
                 newTime = runtime.seconds();
                 setPointArm = 0;
-                previousPositionArm = positionArm;
-                positionArm = arm0.getCurrentPosition() - startArm;
-                deltaPositionArm = positionArm - previousPositionArm;
-                errorArm = setPointArm - positionArm;
                 arm0.setPower((errorArm * kp - (kd * velocityArm)));
                 arm1.setPower(-(errorArm * kp - (kd * velocityArm)));
 
@@ -663,13 +645,13 @@ public class BlueFar extends LinearOpMode {
                     setPoint2 = -100;
                     setPoint3 = -100;
                 }
-                if(right){
+                if(close){
                     setPoint0 = -200;
                     setPoint1 = -200;
                     setPoint2 = -200;
                     setPoint3 = -200;
                 }
-                if(left){
+                if(far){
                     setPoint0 = -150;
                     setPoint1 = -150;
                     setPoint2 = -150;
@@ -691,10 +673,6 @@ public class BlueFar extends LinearOpMode {
 
                 newTime = runtime.seconds();
                 setPointArm = 0;
-                previousPositionArm = positionArm;
-                positionArm = arm0.getCurrentPosition() - startArm;
-                deltaPositionArm = positionArm - previousPositionArm;
-                errorArm = setPointArm - positionArm;
                 arm0.setPower((errorArm * kp - (kd * velocityArm)));
                 arm1.setPower(-(errorArm * kp - (kd * velocityArm)));
 
@@ -728,7 +706,7 @@ public class BlueFar extends LinearOpMode {
                     motor3.setPower(0);
                 }
             }
-            else if(move10 && (right)){
+            else if(move10 && (close)){
                 if(move10First){
                     oldTime = runtime.seconds();
                     start0 = motor0.getCurrentPosition();
@@ -761,7 +739,7 @@ public class BlueFar extends LinearOpMode {
                     moveForward = true;
                 }
             }
-            else if(move10 && left){
+            else if(move10 && far){
                 if(move10First){
                     oldTime = runtime.seconds();
                     start0 = motor0.getCurrentPosition();
@@ -857,13 +835,13 @@ public class BlueFar extends LinearOpMode {
                     setPoint2 = 1580;
                     setPoint3 = 1580;
                 }
-                if(left){
+                if(far){
                     setPoint0 = 1540;
                     setPoint1 = 1540;
                     setPoint2 = 1540;
                     setPoint3 = 1540;
                 }
-                if(right){
+                if(close){
                     setPoint0 = 1490;
                     setPoint1 = 1490;
                     setPoint2 = 1490;
@@ -960,13 +938,13 @@ public class BlueFar extends LinearOpMode {
                     setPoint1 = 3070;
                     setPoint2 = 3070;
                     setPoint3 = 3070;
-                } else if(left){
+                } else if(far){
                     setPoint0 = 2700;
                     setPoint1 = 2700;
                     setPoint2 = 2700;
                     setPoint3 = 2700;
                 }
-                else if(right){
+                else if(close){
                     setPoint0 = 2770;
                     setPoint1 = 2770;
                     setPoint2 = 2770;
@@ -1058,7 +1036,7 @@ public class BlueFar extends LinearOpMode {
                     motorPower0 = -0.43;
                     motorPower1 = 0.43;
                 }
-                else if(left){
+                else if(far){
                     setPoint0 = -470;
                     setPoint1 = 470;
                     setPoint2 = 470;
@@ -1066,7 +1044,7 @@ public class BlueFar extends LinearOpMode {
                     motorPower0 = -0.3515;
                     motorPower1 = 0.3515;
                 }
-                else if(right){
+                else if(close){
                     setPoint0 = -600;
                     setPoint1 = 600;
                     setPoint2 = 600;
@@ -1084,7 +1062,7 @@ public class BlueFar extends LinearOpMode {
                     motor1.setPower(motorPower1 + headingError * 0.0125);
                     motor2.setPower(motorPower1 - headingError * 0.0125);
                     motor3.setPower(motorPower0 - headingError * 0.0125);
-                if(left) {
+                if(far) {
                     if (newTime - oldTime >= 1.2) {
                         motor0.setPower(0);
                         motor1.setPower(0);
@@ -1106,7 +1084,7 @@ public class BlueFar extends LinearOpMode {
                         move13 = true;
                     }
                 }
-                if(right){
+                if(close){
                     if (newTime - oldTime >= 1.2) {
                         motor0.setPower(0);
                         motor1.setPower(0);
@@ -1134,7 +1112,7 @@ public class BlueFar extends LinearOpMode {
                 }
                 position();
                 newTime = runtime.seconds();
-                if(left){
+                if(far){
                     setPoint0 = 450;
                     setPoint1 = 450;
                     setPoint2 = 450;
@@ -1148,7 +1126,7 @@ public class BlueFar extends LinearOpMode {
                     setPoint3 = 450;
                     motorPower0 = 0.36;
                 }
-                else if(right){
+                else if(close){
                     setPoint0 = 200;
                     setPoint1 = 200;
                     setPoint2 = 200;
@@ -1157,10 +1135,6 @@ public class BlueFar extends LinearOpMode {
                 }
 
                 setPointArm = 335;
-                previousPositionArm = positionArm;
-                positionArm = arm0.getCurrentPosition() - startArm;
-                deltaPositionArm = positionArm - previousPositionArm;
-                errorArm = setPointArm - positionArm;
                 arm0.setPower((errorArm * kp - (kd * velocityArm)));
                 arm1.setPower(-(errorArm * kp - (kd * velocityArm)));
 
@@ -1203,10 +1177,6 @@ public class BlueFar extends LinearOpMode {
                 position();
 
                 setPointArm = 335;
-                previousPositionArm = positionArm;
-                positionArm = arm0.getCurrentPosition() - startArm;
-                deltaPositionArm = positionArm - previousPositionArm;
-                errorArm = setPointArm - positionArm;
                 arm0.setPower((errorArm * kp - (kd * velocityArm)));
                 arm1.setPower(-(errorArm * kp - (kd * velocityArm)));
                 if(middle){
@@ -1215,13 +1185,13 @@ public class BlueFar extends LinearOpMode {
                     setPoint2 = 0;
                     setPoint3 = 0;
                 }
-                if(right){
+                if(close){
                     setPoint0 = 0;
                     setPoint1 = 0;
                     setPoint2 = 0;
                     setPoint3 = 0;
                 }
-                if(left){
+                if(far){
                     setPoint0 = 0;
                     setPoint1 = 0;
                     setPoint2 = 0;
@@ -1249,7 +1219,7 @@ public class BlueFar extends LinearOpMode {
                         servo0.setPower(-1);
                     }
 
-                } else if(right){
+                } else if(close){
                     if(newTime - oldTime >= 0.315){
                         servo0.setPower(-1);
                     }
@@ -1300,10 +1270,6 @@ public class BlueFar extends LinearOpMode {
 
 
                 setPointArm = 260;
-                previousPositionArm = positionArm;
-                positionArm = arm0.getCurrentPosition() - startArm;
-                deltaPositionArm = positionArm - previousPositionArm;
-                errorArm = setPointArm - positionArm;
                 arm0.setPower((errorArm * kp - (kd * velocityArm)));
                 arm1.setPower(-(errorArm * kp - (kd * velocityArm)));
 
@@ -1312,7 +1278,7 @@ public class BlueFar extends LinearOpMode {
 
                 velocityArm = deltaPositionArm / deltaTime;
 
-                if(!left){
+                if(!far){
                     if(targetPositionLeft < 0.55){
                         targetPositionLeft += 0.009;
                     }
@@ -1325,10 +1291,10 @@ public class BlueFar extends LinearOpMode {
                 servo0.setPower(0);
                 targetPositionRight = closedRight;
                 servoRight.setPosition(targetPositionRight);
-                if(left || middle){
+                if(far || middle){
                     servoLeft.setPosition(targetPositionLeft);
                 }
-                if(right){
+                if(close){
                     servoLeft.setPosition(targetPositionLeft);
                 }
 
@@ -1337,7 +1303,7 @@ public class BlueFar extends LinearOpMode {
                         move15 = false;
                         move17 = true;
                     }
-                } else if(right){
+                } else if(close){
                     if(newTime - oldTime >= 0.75){
                         move15 = false;
                         move17 = true;
@@ -1365,7 +1331,7 @@ public class BlueFar extends LinearOpMode {
                 }
                 position();
                 newTime = runtime.seconds();
-                if(left){
+                if(far){
                     setPoint0 = 450;
                     setPoint1 = 450;
                     setPoint2 = 450;
@@ -1379,7 +1345,7 @@ public class BlueFar extends LinearOpMode {
                     setPoint3 = 450;
                     motorPower0 = -0.27;
                 }
-                else if(right){
+                else if(close){
                     setPoint0 = 200;
                     setPoint1 = 200;
                     setPoint2 = 200;
@@ -1388,10 +1354,6 @@ public class BlueFar extends LinearOpMode {
                 }
 
                 setPointArm = 260;
-                previousPositionArm = positionArm;
-                positionArm = arm0.getCurrentPosition() - startArm;
-                deltaPositionArm = positionArm - previousPositionArm;
-                errorArm = setPointArm - positionArm;
                 arm0.setPower((errorArm * kp - (kd * velocityArm)));
                 arm1.setPower(-(errorArm * kp - (kd * velocityArm)));
 
@@ -1403,7 +1365,7 @@ public class BlueFar extends LinearOpMode {
                 position();
 
 
-                if(!left){
+                if(!far){
                     if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 0.25) || newTime - oldTime >= 0.25) {
                         motor0.setPower(0);
                         motor1.setPower(0);
@@ -1450,10 +1412,6 @@ public class BlueFar extends LinearOpMode {
 
                 newTime = runtime.seconds();
                 setPointArm = 335;
-                previousPositionArm = positionArm;
-                positionArm = arm0.getCurrentPosition() - startArm;
-                deltaPositionArm = positionArm - previousPositionArm;
-                errorArm = setPointArm - positionArm;
                 arm0.setPower((errorArm * kp - (kd * velocityArm)));
                 arm1.setPower(-(errorArm * kp - (kd * velocityArm)));
 
@@ -1523,6 +1481,11 @@ public class BlueFar extends LinearOpMode {
         error1 = setPoint1 - position1;
         error2 = setPoint2 - position2;
         error3 = setPoint3 - position3;
+
+        previousPositionArm = positionArm;
+        positionArm = arm0.getCurrentPosition() - startArm;
+        deltaPositionArm = positionArm - previousPositionArm;
+        errorArm = setPointArm - positionArm;
 
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         headingError = setYaw - orientation.getYaw(AngleUnit.DEGREES);
