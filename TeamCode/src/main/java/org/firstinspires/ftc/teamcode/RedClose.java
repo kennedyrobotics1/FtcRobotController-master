@@ -105,8 +105,8 @@ public class RedClose extends LinearOpMode {
     private TfodProcessor tfod;
 
     private VisionPortal visionPortal;
-    private static final String TFOD_MODEL_ASSET = "RedBox.tflite";
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/RedBox.tflite";
+    private static final String TFOD_MODEL_ASSET = "RedBoxOld.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/RedBoxOld.tflite";
     private static final String[] LABELS = {
             "RB",
     };
@@ -344,7 +344,7 @@ public class RedClose extends LinearOpMode {
                 if((motorPower1 > -0.2 && motorPower1 < 0)){
                     motorPower1 = -0.2;
                 }
-                setYaw = 39;
+                setYaw = 35;
 
                 motor0.setPower(motorPower0);
                 motor1.setPower(motorPower1);
@@ -650,10 +650,10 @@ public class RedClose extends LinearOpMode {
                 }
 
                 if(middle){
-                    setPoint0 = 190;
-                    setPoint1 = 190;
-                    setPoint2 = 190;
-                    setPoint3 = 190;
+                    setPoint0 = 220;
+                    setPoint1 = 220;
+                    setPoint2 = 220;
+                    setPoint3 = 220;
                 }
                 if(left){
                     setPoint0 = 260;
@@ -1078,7 +1078,7 @@ public class RedClose extends LinearOpMode {
                     motor1.setPower(0);
                     motor2.setPower(0);
                     motor3.setPower(0);
-                    move11 = true;
+                    move12 = true;
                 }
             }
 
@@ -1141,11 +1141,17 @@ public class RedClose extends LinearOpMode {
                     move12First = false;
 
                 }
-                if(middle || right){
+                if(middle){
                     setPoint0 = 1100;
                     setPoint1 = 1100;
                     setPoint2 = 1100;
                     setPoint3 = 1100;
+                }
+                if(right){
+                    setPoint0 = 1000;
+                    setPoint1 = 1000;
+                    setPoint2 = 1000;
+                    setPoint3 = 1000;
                 }
                 if(left){
                     setPoint0 = 1160;
@@ -1181,10 +1187,10 @@ public class RedClose extends LinearOpMode {
                     motorPower1 = -0.25;
                 }
 
-                motor0.setPower(motorPower0 * 0.55);
-                motor1.setPower(motorPower0 * 0.55);
-                motor2.setPower(motorPower0 * 0.55);
-                motor3.setPower(motorPower0 * 0.55);
+                motor0.setPower((motorPower0 - headingError * 0.0125) * 0.4);
+                motor1.setPower((motorPower0 + headingError * 0.0125) * 0.4);
+                motor2.setPower((motorPower0 - headingError * 0.0125) * 0.4);
+                motor3.setPower((motorPower0 + headingError * 0.0125) * 0.4);
                 position();
 
                 setPointClaw = startClaw;
@@ -1270,18 +1276,18 @@ public class RedClose extends LinearOpMode {
                 newTime = runtime.seconds();
                 if(left){
 
-                    motorPower0 = -0.4675;
-                    motorPower1 = 0.4675;
+                    motorPower0 = -0.42;
+                    motorPower1 = 0.42;
                 }
                 if(middle){
 
-                    motorPower0 = -0.393;
-                    motorPower1 = 0.393;
+                    motorPower0 = -0.39;
+                    motorPower1 = 0.39;
                 }
                 if(right){
 
-                    motorPower0 = -0.5575;
-                    motorPower1 = 0.5575;
+                    motorPower0 = -0.5325;
+                    motorPower1 = 0.5325;
                 }
 
 
@@ -1299,10 +1305,10 @@ public class RedClose extends LinearOpMode {
                     motorPower1 = -0.25;
                 }
 
-                motor0.setPower(motorPower0);
-                motor1.setPower(motorPower1);
-                motor2.setPower(motorPower1);
-                motor3.setPower(motorPower0);
+                motor0.setPower(motorPower0 + headingError * 0.03);
+                motor1.setPower(motorPower1 + headingError * 0.03);
+                motor2.setPower(motorPower1 - headingError * 0.03);
+                motor3.setPower(motorPower0 - headingError * 0.03);
                 position();
                 if ((error0 <= 20 && error0 >= -20) || (error1 <= 20 && error1 >= -20) || newTime - oldTime >= 0.975) {
                     motor0.setPower(0);
@@ -1377,7 +1383,7 @@ public class RedClose extends LinearOpMode {
                 servo1.setPosition(targetPosition0);
                 servo2.setPosition(targetPosition1);
 
-                if(newTime - oldTime >= 0.75){
+                if(newTime - oldTime >= 0.95){
                     servo0.setPower(0);
                     motor0.setPower(0);
                     motor1.setPower(0);
@@ -1433,7 +1439,14 @@ public class RedClose extends LinearOpMode {
 
                 targetPosition0 = 0.08;
                 servo0.setPower(0);
-                targetPosition1 = 0.45;
+                if(!right){
+                    targetPosition1 = 0.45;
+                } else {
+                    if(targetPosition1 >= 0.45){
+                        targetPosition1 -= 0.031;
+                    }
+                }
+
                 servo1.setPosition(targetPosition0);
                 servo2.setPosition(targetPosition1);
 
@@ -1562,7 +1575,7 @@ public class RedClose extends LinearOpMode {
                 motor3.setPower(motorPower0);
                 position();
                 if(middle){
-                    if (newTime - oldTime >= 0.98) {
+                    if (newTime - oldTime >= 0.88) {
                         motor0.setPower(0);
                         motor1.setPower(0);
                         motor2.setPower(0);
@@ -1573,7 +1586,7 @@ public class RedClose extends LinearOpMode {
                     }
                 }
                 if(right){
-                    if (newTime - oldTime >= 1.145) {
+                    if (newTime - oldTime >= 1.07) {
                         motor0.setPower(0);
                         motor1.setPower(0);
                         motor2.setPower(0);
@@ -1584,7 +1597,7 @@ public class RedClose extends LinearOpMode {
                     }
                 }
                 if(left){
-                    if (newTime - oldTime >= 0.78) {
+                    if (newTime - oldTime >= 0.69) {
                         motor0.setPower(0);
                         motor1.setPower(0);
                         motor2.setPower(0);
@@ -1644,10 +1657,10 @@ public class RedClose extends LinearOpMode {
                 servo0.setPower(0);
 
 
-                motor0.setPower(0.4);
-                motor1.setPower(0.4);
-                motor2.setPower(0.4);
-                motor3.setPower(0.4);
+                motor0.setPower(0.35);
+                motor1.setPower(0.35);
+                motor2.setPower(0.35);
+                motor3.setPower(0.35);
 
 
 

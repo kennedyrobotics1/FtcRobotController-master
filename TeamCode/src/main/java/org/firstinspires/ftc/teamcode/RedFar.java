@@ -106,8 +106,8 @@ public class RedFar extends LinearOpMode {
     private TfodProcessor tfod;
 
     private VisionPortal visionPortal;
-    private static final String TFOD_MODEL_ASSET = "RedBox.tflite";
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/RedBox.tflite";
+    private static final String TFOD_MODEL_ASSET = "RedBoxOld.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/RedBoxOld.tflite";
     private static final String[] LABELS = {
             "RB",
     };
@@ -332,19 +332,19 @@ public class RedFar extends LinearOpMode {
                 newTime = runtime.seconds();
                 double motorPower0 = -(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.2 && motorPower0 > 0)){
-                    motorPower0 = 0.2;
+                if((motorPower0 < 0.125 && motorPower0 > 0)){
+                    motorPower0 = 0.125;
                 }
-                if((motorPower0 > -0.2 && motorPower0 < 0)){
-                    motorPower0 = -0.2;
+                if((motorPower0 > -0.125 && motorPower0 < 0)){
+                    motorPower0 = -0.125;
                 }
-                if((motorPower1 < 0.2 && motorPower1 > 0)){
-                    motorPower1 = 0.2;
+                if((motorPower1 < 0.125 && motorPower1 > 0)){
+                    motorPower1 = 0.125;
                 }
-                if((motorPower1 > -0.2 && motorPower1 < 0)){
-                    motorPower1 = -0.2;
+                if((motorPower1 > -0.125 && motorPower1 < 0)){
+                    motorPower1 = -0.125;
                 }
-                setYaw = 19;
+                setYaw = 26;
 
                 motor0.setPower(motorPower0);
                 motor1.setPower(motorPower1);
@@ -382,7 +382,7 @@ public class RedFar extends LinearOpMode {
                     motor2.setPower(0);
                     motor3.setPower(0);
                 }
-                if(newTime - oldTime >= 2.75){
+                if(newTime - oldTime >= 2.55){
                     move2 = false;
                     move5 = true;
                     motor0.setPower(0);
@@ -825,10 +825,10 @@ public class RedFar extends LinearOpMode {
                     setPoint3 = -150;
                 }
                 if(left){
-                    setPoint0 = -170;
-                    setPoint1 = -170;
-                    setPoint2 = -170;
-                    setPoint3 = -170;
+                    setPoint0 = -40;
+                    setPoint1 = -40;
+                    setPoint2 = -40;
+                    setPoint3 = -40;
                 }
 
 
@@ -951,17 +951,17 @@ public class RedFar extends LinearOpMode {
                 }
                 double motorPower0 = -(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.16 && motorPower0 > 0)){
-                    motorPower0 = 0.16;
+                if((motorPower0 < 0.125 && motorPower0 > 0)){
+                    motorPower0 = 0.125;
                 }
-                if((motorPower0 > -0.16 && motorPower0 < 0)){
-                    motorPower0 = -0.16;
+                if((motorPower0 > -0.125 && motorPower0 < 0)){
+                    motorPower0 = -0.125;
                 }
-                if((motorPower1 < 0.16 && motorPower1 > 0)){
-                    motorPower1 = 0.16;
+                if((motorPower1 < 0.125 && motorPower1 > 0)){
+                    motorPower1 = 0.125;
                 }
-                if((motorPower1 > -0.16 && motorPower1 < 0)){
-                    motorPower1 = -0.16;
+                if((motorPower1 > -0.125 && motorPower1 < 0)){
+                    motorPower1 = -0.125;
                 }
                 newTime = runtime.seconds();
                 setYaw = 0;
@@ -1069,10 +1069,10 @@ public class RedFar extends LinearOpMode {
                     setPoint3 = 1382;
                 }
                 if(left){
-                    setPoint0 = 1570;
-                    setPoint1 = 1570;
-                    setPoint2 = 1570;
-                    setPoint3 = 1570;
+                    setPoint0 = 1400;
+                    setPoint1 = 1400;
+                    setPoint2 = 1400;
+                    setPoint3 = 1400;
                 }
                 if(right){
                     setPoint0 = 1450;
@@ -1267,17 +1267,17 @@ public class RedFar extends LinearOpMode {
                 newTime = runtime.seconds();
                 double motorPower0 = -(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.14 && motorPower0 > 0)){
-                    motorPower0 = 0.14;
+                if((motorPower0 < 0.12 && motorPower0 > 0)){
+                    motorPower0 = 0.12;
                 }
-                if((motorPower0 > -0.14 && motorPower0 < 0)){
-                    motorPower0 = -0.14;
+                if((motorPower0 > -0.12 && motorPower0 < 0)){
+                    motorPower0 = -0.12;
                 }
-                if((motorPower1 < 0.14 && motorPower1 > 0)){
-                    motorPower1 = 0.14;
+                if((motorPower1 < 0.12 && motorPower1 > 0)){
+                    motorPower1 = 0.12;
                 }
-                if((motorPower1 > -0.14 && motorPower1 < 0)){
-                    motorPower1 = -0.14;
+                if((motorPower1 > -0.12 && motorPower1 < 0)){
+                    motorPower1 = -0.12;
                 }
                 setYaw = -90;
 
@@ -1385,7 +1385,7 @@ public class RedFar extends LinearOpMode {
                 position();
                 newTime = runtime.seconds();
                 if(middle){
-                    setPoint = 625;
+                    setPoint = 365;
                 } else {
                     setPoint = 365;
                 }
@@ -1398,10 +1398,10 @@ public class RedFar extends LinearOpMode {
                 arm1.setPower(-(error * kp - (kd * velocity)));
 
                 if(middle){
-                    setPoint0 = 940;
-                    setPoint1 = 940;
-                    setPoint2 = 940;
-                    setPoint3 = 940;
+                    setPoint0 = 895;
+                    setPoint1 = 895;
+                    setPoint2 = 895;
+                    setPoint3 = 895;
                 } else if(left){
                     setPoint0 = 875;
                     setPoint1 = 875;
@@ -1449,15 +1449,28 @@ public class RedFar extends LinearOpMode {
 
 
                 servo0.setPower(-(errorClaw *  kpClaw));
-                if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 1.75) || newTime - oldTime >= 2.1) {
-                    motor0.setPower(0);
-                    motor1.setPower(0);
-                    motor2.setPower(0);
-                    motor3.setPower(0);
-                    servo0.setPower(0);
-                    move13 = false;
-                    move14 = true;
+                if(!middle){
+                    if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 1.75) || newTime - oldTime >= 2.1) {
+                        motor0.setPower(0);
+                        motor1.setPower(0);
+                        motor2.setPower(0);
+                        motor3.setPower(0);
+                        servo0.setPower(0);
+                        move13 = false;
+                        move14 = true;
 
+                    }
+                } else {
+                    if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 1) || newTime - oldTime >= 1.5) {
+                        motor0.setPower(0);
+                        motor1.setPower(0);
+                        motor2.setPower(0);
+                        motor3.setPower(0);
+                        servo0.setPower(0);
+                        move13 = false;
+                        move14 = true;
+
+                    }
                 }
             }
 
@@ -1483,7 +1496,7 @@ public class RedFar extends LinearOpMode {
                 position();
 
                 if(middle){
-                    setPoint = 625;
+                    setPoint = 365;
                 } else {
                     setPoint = 365;
                 }
@@ -1534,10 +1547,10 @@ public class RedFar extends LinearOpMode {
 
                 if(middle){
                     if(newTime - oldTime >= 0){
-                        servo0.setPower(-0.5);
+                        servo0.setPower(-0.23);
                     }
-                    if(newTime - oldTime >= 0.8){
-                        servo0.setPower(-0.0325);
+                    if(newTime - oldTime >= 1.1625){
+                        servo0.setPower(-0.01);
                     }
                 } else {
                     if(newTime - oldTime >= 0){
@@ -1572,7 +1585,7 @@ public class RedFar extends LinearOpMode {
                         move15 = true;
                     }
                 } else {
-                    if(newTime - oldTime >= 1.5){
+                    if(newTime - oldTime >= 1.3){
                         servo0.setPower(0);
                         motor0.setPower(0);
                         motor1.setPower(0);
@@ -1639,7 +1652,7 @@ public class RedFar extends LinearOpMode {
                     }
                 } else {
                     if(targetPosition1 >= 0.45){
-                        targetPosition1 -= 0.00365;
+                        targetPosition1 -= 0.0046;
                     }
                 }
 
@@ -1677,7 +1690,8 @@ public class RedFar extends LinearOpMode {
                         targetPosition1 = 0.92;
                         servo2.setPosition(targetPosition1);
                     }
-                    if(newTime - oldTime >= 1.28){
+                    //1.28
+                    if(newTime - oldTime >= 1.1){
                         targetPosition1 = 0.92;
                         servo2.setPosition(targetPosition1);
                         motor0.setPower(0);

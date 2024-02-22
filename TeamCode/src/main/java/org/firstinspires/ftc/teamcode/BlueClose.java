@@ -330,17 +330,17 @@ public class BlueClose extends LinearOpMode {
                 newTime = runtime.seconds();
                 double motorPower0 = -(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.2 && motorPower0 > 0)){
-                    motorPower0 = 0.2;
+                if((motorPower0 < 0.125 && motorPower0 > 0)){
+                    motorPower0 = 0.125;
                 }
-                if((motorPower0 > -0.2 && motorPower0 < 0)){
-                    motorPower0 = -0.2;
+                if((motorPower0 > -0.125 && motorPower0 < 0)){
+                    motorPower0 = -0.125;
                 }
-                if((motorPower1 < 0.2 && motorPower1 > 0)){
-                    motorPower1 = 0.2;
+                if((motorPower1 < 0.125 && motorPower1 > 0)){
+                    motorPower1 = 0.125;
                 }
-                if((motorPower1 > -0.2 && motorPower1 < 0)){
-                    motorPower1 = -0.2;
+                if((motorPower1 > -0.125 && motorPower1 < 0)){
+                    motorPower1 = -0.125;
                 }
                 setYaw = 26;
 
@@ -401,17 +401,17 @@ public class BlueClose extends LinearOpMode {
                 newTime = runtime.seconds();
                 double motorPower0 = -(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.175 && motorPower0 > 0)){
-                    motorPower0 = 0.175;
+                if((motorPower0 < 0.125 && motorPower0 > 0)){
+                    motorPower0 = 0.125;
                 }
-                if((motorPower0 > -0.175 && motorPower0 < 0)){
-                    motorPower0 = -0.175;
+                if((motorPower0 > -0.125 && motorPower0 < 0)){
+                    motorPower0 = -0.125;
                 }
-                if((motorPower1 < 0.175 && motorPower1 > 0)){
-                    motorPower1 = 0.175;
+                if((motorPower1 < 0.125 && motorPower1 > 0)){
+                    motorPower1 = 0.125;
                 }
-                if((motorPower1 > -0.175 && motorPower1 < 0)){
-                    motorPower1 = -0.175;
+                if((motorPower1 > -0.125 && motorPower1 < 0)){
+                    motorPower1 = -0.125;
                 }
                 setYaw = -40;
 
@@ -470,17 +470,17 @@ public class BlueClose extends LinearOpMode {
                 newTime = runtime.seconds();
                 double motorPower0 = -(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.15 && motorPower0 > 0)){
-                    motorPower0 = 0.15;
+                if((motorPower0 < 0.125 && motorPower0 > 0)){
+                    motorPower0 = 0.125;
                 }
-                if((motorPower0 > -0.15 && motorPower0 < 0)){
-                    motorPower0 = -0.15;
+                if((motorPower0 > -0.125 && motorPower0 < 0)){
+                    motorPower0 = -0.125;
                 }
-                if((motorPower1 < 0.15 && motorPower1 > 0)){
-                    motorPower1 = 0.15;
+                if((motorPower1 < 0.125 && motorPower1 > 0)){
+                    motorPower1 = 0.125;
                 }
-                if((motorPower1 > -0.15 && motorPower1 < 0)){
-                    motorPower1 = -0.15;
+                if((motorPower1 > -0.125 && motorPower1 < 0)){
+                    motorPower1 = -0.125;
                 }
                 setYaw = 0;
 
@@ -648,10 +648,10 @@ public class BlueClose extends LinearOpMode {
                 }
 
                 if(middle){
-                    setPoint0 = 192;
-                    setPoint1 = 192;
-                    setPoint2 = 192;
-                    setPoint3 = 192;
+                    setPoint0 = 210;
+                    setPoint1 = 210;
+                    setPoint2 = 210;
+                    setPoint3 = 210;
                 }
                 if(left){
                     setPoint0 = 170;
@@ -904,17 +904,17 @@ public class BlueClose extends LinearOpMode {
                 newTime = runtime.seconds();
                 double motorPower0 =-(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.155 && motorPower0 > 0)){
-                    motorPower0 = 0.155;
+                if((motorPower0 < 0.125 && motorPower0 > 0)){
+                    motorPower0 = 0.125;
                 }
-                if((motorPower0 > -0.155 && motorPower0 < 0)){
-                    motorPower0 = -0.155;
+                if((motorPower0 > -0.125 && motorPower0 < 0)){
+                    motorPower0 = -0.125;
                 }
-                if((motorPower1 < 0.155 && motorPower1 > 0)){
-                    motorPower1 = 0.155;
+                if((motorPower1 < 0.125 && motorPower1 > 0)){
+                    motorPower1 = 0.125;
                 }
-                if((motorPower1 > -0.155 && motorPower1 < 0)){
-                    motorPower1 = -0.155;
+                if((motorPower1 > -0.125 && motorPower1 < 0)){
+                    motorPower1 = -0.125;
                 }
                 setYaw = 90;
 
@@ -995,17 +995,17 @@ public class BlueClose extends LinearOpMode {
                 newTime = runtime.seconds();
                 double motorPower0 =-(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.155 && motorPower0 > 0)){
-                    motorPower0 = 0.155;
+                if((motorPower0 < 0.125 && motorPower0 > 0)){
+                    motorPower0 = 0.125;
                 }
-                if((motorPower0 > -0.155 && motorPower0 < 0)){
-                    motorPower0 = -0.155;
+                if((motorPower0 > -0.125 && motorPower0 < 0)){
+                    motorPower0 = -0.125;
                 }
-                if((motorPower1 < 0.155 && motorPower1 > 0)){
-                    motorPower1 = 0.155;
+                if((motorPower1 < 0.125 && motorPower1 > 0)){
+                    motorPower1 = 0.125;
                 }
-                if((motorPower1 > -0.155 && motorPower1 < 0)){
-                    motorPower1 = -0.155;
+                if((motorPower1 > -0.125 && motorPower1 < 0)){
+                    motorPower1 = -0.125;
                 }
                 setYaw = 90;
 
@@ -1025,7 +1025,7 @@ public class BlueClose extends LinearOpMode {
                     motor1.setPower(0);
                     motor2.setPower(0);
                     motor3.setPower(0);
-                    move11 = true;
+                    move12 = true;
                 }
             }
             else if ((move10 && middle)){
@@ -1040,17 +1040,17 @@ public class BlueClose extends LinearOpMode {
                 position();
                 double motorPower0 = -(headingError * kpA);
                 double motorPower1 = (headingError * kpA);
-                if((motorPower0 < 0.185 && motorPower0 > 0)){
-                    motorPower0 = 0.185;
+                if((motorPower0 < 0.125 && motorPower0 > 0)){
+                    motorPower0 = 0.125;
                 }
-                if((motorPower0 > -0.185 && motorPower0 < 0)){
-                    motorPower0 = -0.185;
+                if((motorPower0 > -0.125 && motorPower0 < 0)){
+                    motorPower0 = -0.125;
                 }
-                if((motorPower1 < 0.185 && motorPower1 > 0)){
-                    motorPower1 = 0.185;
+                if((motorPower1 < 0.125 && motorPower1 > 0)){
+                    motorPower1 = 0.125;
                 }
-                if((motorPower1 > -0.185 && motorPower1 < 0)){
-                    motorPower1 = -0.185;
+                if((motorPower1 > -0.125 && motorPower1 < 0)){
+                    motorPower1 = -0.125;
                 }
                 newTime = runtime.seconds();
                 setYaw = 90;
@@ -1072,54 +1072,6 @@ public class BlueClose extends LinearOpMode {
                     motor1.setPower(0);
                     motor2.setPower(0);
                     motor3.setPower(0);
-                    move12 = true;
-                }
-
-            }
-
-            else if(move11){
-                if(move11First){
-                    oldTime = runtime.seconds();
-                    start0 = motor0.getCurrentPosition();
-                    start1 = motor1.getCurrentPosition();
-                    start2 = motor2.getCurrentPosition();
-                    start3 = motor3.getCurrentPosition();
-                    move11First = false;
-                }
-                newTime = runtime.seconds();
-                setPoint0 = 400;
-                setPoint1 = -400;
-                setPoint2 = -400;
-                setPoint3 = 400;
-
-
-                motorPower0 = -0.6;
-                motorPower1 = 0.6;
-                if((motorPower0 < 0.25 && motorPower0 > 0)){
-                    motorPower0 = 0.25;
-                }
-                if((motorPower0 > -0.25 && motorPower0 < 0)){
-                    motorPower0 = -0.25;
-                }
-                if((motorPower1 < 0.25 && motorPower1 > 0)){
-                    motorPower1 = 0.25;
-                }
-                if((motorPower1 > -0.25 && motorPower1 < 0)){
-                    motorPower1 = -0.25;
-                }
-
-                motor0.setPower(motorPower0);
-                motor1.setPower(motorPower1);
-                motor2.setPower(motorPower1);
-                motor3.setPower(motorPower0);
-                position();
-                if ((error0 <= 20 && error0 >= -20) || (error1 <= 20 && error1 >= -20) || newTime - oldTime >= 0.25) {
-                    motor0.setPower(0);
-                    motor1.setPower(0);
-                    motor2.setPower(0);
-                    motor3.setPower(0);
-                    servo0.setPower(0);
-                    move11 = false;
                     move12 = true;
                 }
 
@@ -1176,26 +1128,40 @@ public class BlueClose extends LinearOpMode {
                     motorPower1 = -0.25;
                 }
 
-                motor0.setPower((motorPower0) * 0.55);
-                motor1.setPower((motorPower0) * 0.55);
-                motor2.setPower((motorPower0) * 0.55);
-                motor3.setPower((motorPower0) * 0.55);
+                motor0.setPower((motorPower0 - headingError * 0.0125) * 0.4);
+                motor1.setPower((motorPower0 + headingError * 0.0125) * 0.4);
+                motor2.setPower((motorPower0 - headingError * 0.0125) * 0.4);
+                motor3.setPower((motorPower0 + headingError * 0.0125) * 0.4);
                 position();
 
                 setPointClaw = startClaw;
 
 
                 servo0.setPower(0);
-                if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 2.0) || newTime - oldTime >= 2.5){
-                    motor0.setPower(0);
-                    motor1.setPower(0);
-                    motor2.setPower(0);
-                    motor3.setPower(0);
-                    servo0.setPower(0);
-                    move12 = false;
-                    move13 = true;
+                if(left){
+                    if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 2.0) || newTime - oldTime >= 2.5){
+                        motor0.setPower(0);
+                        motor1.setPower(0);
+                        motor2.setPower(0);
+                        motor3.setPower(0);
+                        servo0.setPower(0);
+                        move12 = false;
+                        move13 = true;
 
+                    }
+                } else {
+                    if (((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 2.0) || newTime - oldTime >= 2.5){
+                        motor0.setPower(0);
+                        motor1.setPower(0);
+                        motor2.setPower(0);
+                        motor3.setPower(0);
+                        servo0.setPower(0);
+                        move12 = false;
+                        move13 = true;
+
+                    }
                 }
+
             }
             else if(move13){
                 if(move13First){
@@ -1209,8 +1175,8 @@ public class BlueClose extends LinearOpMode {
                 newTime = runtime.seconds();
                 if(left){
 
-                    motorPower0 = 0.32;
-                    motorPower1 = -0.32;
+                    motorPower0 = 0.091;
+                    motorPower1 = -0.091;
                 }
                 if(middle){
 
@@ -1219,8 +1185,8 @@ public class BlueClose extends LinearOpMode {
                 }
                 if(right){
 
-                    motorPower0 = 0.3575;
-                    motorPower1 = -0.3575;
+                    motorPower0 = 0.329;
+                    motorPower1 = -0.329;
                 }
 
 
@@ -1237,11 +1203,18 @@ public class BlueClose extends LinearOpMode {
                 if((motorPower1 > -0.25 && motorPower1 < 0)){
                     motorPower1 = -0.25;
                 }
+                if(!left){
+                    motor0.setPower(motorPower0 - headingError * 0.066);
+                    motor1.setPower(motorPower1 - headingError * 0.066);
+                    motor2.setPower(motorPower1 + headingError * 0.066);
+                    motor3.setPower(motorPower0 + headingError * 0.066);
+                } else {
+                    motor0.setPower(motorPower0 - headingError * 0.093);
+                    motor1.setPower(motorPower1 - headingError * 0.093);
+                    motor2.setPower(motorPower1 + headingError * 0.093);
+                    motor3.setPower(motorPower0 + headingError * 0.093);
+                }
 
-                motor0.setPower(motorPower0);
-                motor1.setPower(motorPower1);
-                motor2.setPower(motorPower1);
-                motor3.setPower(motorPower0);
                 position();
                 if ((error0 <= 20 && error0 >= -20) || (error1 <= 20 && error1 >= -20) || newTime - oldTime >= 0.975) {
                     motor0.setPower(0);
@@ -1289,10 +1262,10 @@ public class BlueClose extends LinearOpMode {
                     motor2.setPower(0.225);
                     motor3.setPower(0.225);
                 } else {
-                    motor0.setPower(0.2375);
-                    motor1.setPower(0.2375);
-                    motor2.setPower(0.2375);
-                    motor3.setPower(0.2375);
+                    motor0.setPower(0.111);
+                    motor1.setPower(0.111);
+                    motor2.setPower(0.111);
+                    motor3.setPower(0.111);
                 }
 
 
@@ -1300,7 +1273,7 @@ public class BlueClose extends LinearOpMode {
 
                 newTime = runtime.seconds();
                 if(left){
-                    setPoint = 395;
+                    setPoint = 0;
 
                 } else {
                     setPoint = 0;
@@ -1318,7 +1291,7 @@ public class BlueClose extends LinearOpMode {
                         servo0.setPower(-1);
                     }
                 } else {
-                    if(newTime - oldTime >= 0.1){
+                    if(newTime - oldTime >= 0){
                         servo0.setPower(-1);
                     }
                 }
@@ -1337,7 +1310,7 @@ public class BlueClose extends LinearOpMode {
                 servo1.setPosition(targetPosition0);
                 servo2.setPosition(targetPosition1);
 
-                if(newTime - oldTime >= 0.75){
+                if(newTime - oldTime >= 0.975){
                     servo0.setPower(0);
                     motor0.setPower(0);
                     motor1.setPower(0);
@@ -1357,7 +1330,7 @@ public class BlueClose extends LinearOpMode {
 
                 newTime = runtime.seconds();
                 if(left){
-                    setPoint = 395;
+                    setPoint = 0;
 
                 } else {
                     setPoint = 0;
@@ -1399,7 +1372,14 @@ public class BlueClose extends LinearOpMode {
 
                 targetPosition0 = 0.08;
                 servo0.setPower(0);
-                targetPosition1 = 0.45;
+                if(!left){
+                    targetPosition1 = 0.45;
+                } else {
+                    if(targetPosition1 >= 0.45){
+                        targetPosition1 -= 0.02;
+                    }
+                }
+
                 servo1.setPosition(targetPosition0);
                 if(middle){
                     servo2.setPosition(targetPosition1);
@@ -1453,7 +1433,7 @@ public class BlueClose extends LinearOpMode {
 
                 newTime = runtime.seconds();
                 if(left){
-                    setPoint = 395;
+                    setPoint = 0;
 
                 } else {
                     setPoint = 0;
@@ -1561,7 +1541,7 @@ public class BlueClose extends LinearOpMode {
                     }
                 }
                 if(right){
-                    if (newTime - oldTime >= 0.9) {
+                    if (newTime - oldTime >= 0.75) {
                         motor0.setPower(0);
                         motor1.setPower(0);
                         motor2.setPower(0);
@@ -1572,7 +1552,7 @@ public class BlueClose extends LinearOpMode {
                     }
                 }
                 if(left){
-                    if (newTime - oldTime >= 0.386) {
+                    if (newTime - oldTime >= 0.39) {
                         motor0.setPower(0);
                         motor1.setPower(0);
                         motor2.setPower(0);
