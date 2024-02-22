@@ -1176,10 +1176,10 @@ public class BlueClose extends LinearOpMode {
                     motorPower1 = -0.25;
                 }
 
-                motor0.setPower(motorPower0 * 0.55);
-                motor1.setPower(motorPower0 * 0.55);
-                motor2.setPower(motorPower0 * 0.55);
-                motor3.setPower(motorPower0 * 0.55);
+                motor0.setPower((motorPower0) * 0.55);
+                motor1.setPower((motorPower0) * 0.55);
+                motor2.setPower((motorPower0) * 0.55);
+                motor3.setPower((motorPower0) * 0.55);
                 position();
 
                 setPointClaw = startClaw;
