@@ -130,6 +130,9 @@ public class RedClose extends LinearOpMode {
     double clawPower;
 
     double armSetDown;
+    double previousPosition0;
+    double deltaPosition0;
+    double velocity0;
     @Override
     public void runOpMode() {
         motor0 = hardwareMap.get(DcMotor.class, "motor0");
@@ -264,50 +267,54 @@ public class RedClose extends LinearOpMode {
 
             if (move1) {
                 if(move1First){
+                    //setting start to behind the robot allows the power to start at a number greater than 0
                     start0 -= 200;
-                    startClaw = servoPosition;
+                    oldTime = runtime.seconds();
                     move1First = false;
-
                 }
-                setPoint0 = 550;
-                setPoint1 = 550;
-                setPoint2 = 550;
-                setPoint3 = 550;
+                newTime = runtime.seconds();
+                setPoint0 = 780;
+                setPoint1 = 780;
+                setPoint2 = 780;
+                setPoint3 = 780;
+                updateTime();
+                previousPosition0 = position0;
+                position0 = motor0.getCurrentPosition() - start0;
+                deltaPosition0 = position0 - previousPosition0;
+                velocity0 = deltaPosition0 / deltaTime;
+
+                position();
                 if(position0 < error0){
                     motorPower0 = position0 * kp;
                     motorPower1 = position1 * kp;
                     motorPower2 = position2 * kp;
                     motorPower3 = position3 * kp;
                 } else {
-                    motorPower0 = error0 * kp;
-                    motorPower1 = error1 * kp;
-                    motorPower2 = error2 * kp;
-                    motorPower3 = error3 * kp;
+                    motorPower0 = error0 * kp - (velocity0 * 1.0/900);
+                    motorPower1 = error1 * kp - (velocity0 * 1.0/900);
+                    motorPower2 = error2 * kp - (velocity0 * 1.0/900);
+                    motorPower3 = error3 * kp - (velocity0 * 1.0/900);
+                }
+                if((motorPower0 < 0.04 && motorPower0 > 0)){
+                    motorPower0 = 0.04;
+                }
+                if((motorPower0 > -0.04 && motorPower0 < 0)){
+                    motorPower0 = -0.04;
+                }
+                if((motorPower1 < 0.04 && motorPower1 > 0)){
+                    motorPower1 = 0.04;
+                }
+                if((motorPower1 > -0.04 && motorPower1 < 0)){
+                    motorPower1 = -0.04;
                 }
 
-                if((motorPower0 < 0.15 && motorPower0 > 0)){
-                    motorPower0 = 0.15;
-                }
-                if((motorPower0 > -0.15 && motorPower0 < 0)){
-                    motorPower0 = -0.15;
-                }
-                if((motorPower1 < 0.15 && motorPower1 > 0)){
-                    motorPower1 = 0.15;
-                }
-                if((motorPower1 > -0.15 && motorPower1 < 0)){
-                    motorPower1 = -0.15;
-                }
                 motor0.setPower(motorPower0);
                 motor1.setPower(motorPower0);
                 motor2.setPower(motorPower0);
                 motor3.setPower(motorPower0);
                 position();
 
-                setPointClaw = startClaw;
-
-
-                servo0.setPower(-(errorClaw *  kpClaw));
-                if ((error0 <= 20 && error0 >= -20)) {
+                if ((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 0.75  || newTime - oldTime >= 1.5) {
                     motor0.setPower(0);
                     motor1.setPower(0);
                     motor2.setPower(0);
@@ -317,6 +324,7 @@ public class RedClose extends LinearOpMode {
                     move3 = true;
 
                 }
+
 
             }
 

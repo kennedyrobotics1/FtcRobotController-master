@@ -244,33 +244,39 @@ public class BlueFar extends LinearOpMode {
                     move1First = false;
                 }
                 newTime = runtime.seconds();
-                setPoint0 = 570;
-                setPoint1 = 570;
-                setPoint2 = 570;
-                setPoint3 = 570;
+                setPoint0 = 780;
+                setPoint1 = 780;
+                setPoint2 = 780;
+                setPoint3 = 780;
+                updateTime();
+                previousPosition0 = position0;
+                position0 = motor0.getCurrentPosition() - start0;
+                deltaPosition0 = position0 - previousPosition0;
+                velocity0 = deltaPosition0 / deltaTime;
+
+                position();
                 if(position0 < error0){
                     motorPower0 = position0 * kp;
                     motorPower1 = position1 * kp;
                     motorPower2 = position2 * kp;
                     motorPower3 = position3 * kp;
                 } else {
-                    motorPower0 = error0 * kp;
-                    motorPower1 = error1 * kp;
-                    motorPower2 = error2 * kp;
-                    motorPower3 = error3 * kp;
+                    motorPower0 = error0 * kp - (velocity0 * 1.0/900);
+                    motorPower1 = error1 * kp - (velocity0 * 1.0/900);
+                    motorPower2 = error2 * kp - (velocity0 * 1.0/900);
+                    motorPower3 = error3 * kp - (velocity0 * 1.0/900);
                 }
-
-                if((motorPower0 < 0.15 && motorPower0 > 0)){
-                    motorPower0 = 0.15;
+                if((motorPower0 < 0.04 && motorPower0 > 0)){
+                    motorPower0 = 0.04;
                 }
-                if((motorPower0 > -0.15 && motorPower0 < 0)){
-                    motorPower0 = -0.15;
+                if((motorPower0 > -0.04 && motorPower0 < 0)){
+                    motorPower0 = -0.04;
                 }
-                if((motorPower1 < 0.15 && motorPower1 > 0)){
-                    motorPower1 = 0.15;
+                if((motorPower1 < 0.04 && motorPower1 > 0)){
+                    motorPower1 = 0.04;
                 }
-                if((motorPower1 > -0.15 && motorPower1 < 0)){
-                    motorPower1 = -0.15;
+                if((motorPower1 > -0.04 && motorPower1 < 0)){
+                    motorPower1 = -0.04;
                 }
 
                 motor0.setPower(motorPower0);
@@ -279,7 +285,7 @@ public class BlueFar extends LinearOpMode {
                 motor3.setPower(motorPower0);
                 position();
 
-                if ((error0 <= 20 && error0 >= -20)) {
+                if ((error0 <= 20 && error0 >= -20) && newTime - oldTime >= 0.75  || newTime - oldTime >= 1.5) {
                     motor0.setPower(0);
                     motor1.setPower(0);
                     motor2.setPower(0);
