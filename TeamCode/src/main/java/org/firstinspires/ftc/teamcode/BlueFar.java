@@ -240,8 +240,10 @@ public class BlueFar extends LinearOpMode {
                 if(move1First){
                     //setting start to behind the robot allows the power to start at a number greater than 0
                     start0 -= 200;
+                    oldTime = runtime.seconds();
                     move1First = false;
                 }
+                newTime = runtime.seconds();
                 setPoint0 = 570;
                 setPoint1 = 570;
                 setPoint2 = 570;
